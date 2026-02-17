@@ -21,15 +21,9 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
@@ -74,4 +68,22 @@ class DefaultFirebaseOptions {
     storageBucket: 'grocerylistapp-cd542.firebasestorage.app',
     measurementId: 'G-WL8Z96JKSH',
   );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyDyZfClwb0xoS7mffaFUpa_UwIMPOZH_Oo',
+    appId: '1:815579336789:ios:3c61acdb84667b856384dc',
+    messagingSenderId: '815579336789',
+    projectId: 'grocerylistapp-cd542',
+    storageBucket: 'grocerylistapp-cd542.firebasestorage.app',
+    iosBundleId: 'com.example.groceryApp',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyCStM6tIMQR6d1BpNukJSKYml58WY-NwyE',
+    appId: '1:815579336789:android:76708fd98301a9f76384dc',
+    messagingSenderId: '815579336789',
+    projectId: 'grocerylistapp-cd542',
+    storageBucket: 'grocerylistapp-cd542.firebasestorage.app',
+  );
+
 }

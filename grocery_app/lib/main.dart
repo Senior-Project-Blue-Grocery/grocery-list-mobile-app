@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:grocery_app/screens/home_screen.dart';
+import 'package:grocery_app/screens/login_screen.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const GroceryApp());
 }
 
@@ -8,7 +17,7 @@ class GroceryApp extends StatelessWidget {
   const GroceryApp({super.key});
 
 
-  // root of application
+  /// root of application
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,93 +26,28 @@ class GroceryApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginScreen(),
+      home: const AuthGate(),
+      //home: const LoginScreen(),
     );
   }
 }
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+// Decides if user is logged in
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blue[50],
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.shopping_cart, size: 80, color: Colors.blue),
-              const SizedBox(height: 20),
-
-              const Text(
-                "Grocery List",
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              // email text field
-              TextField(
-                decoration: InputDecoration(
-                  hintText: "Email",
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // password text field
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "Password",
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Colors.blue,
-                  ),
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              TextButton(
-                onPressed: () {},
-                child: const Text("Create an account"),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(), 
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return const HomeScreen();
+        }
+        return const LoginScreen();
+      },
+      );
+  
   }
 }
 
