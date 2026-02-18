@@ -25,17 +25,28 @@ class _LoginScreenState extends State<LoginScreen> {
         password: passwordController.text.trim()
         );
 
+
+        /*
         if (mounted) {
           Navigator.pushReplacement(
             context, 
             MaterialPageRoute(builder: (builder) => const HomeScreen()),
             );
         }
-    } catch (e) {
+        */
+
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message ?? 'Login failed';
+      });
+    }
+    
+    /*catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Login failed"))
         );
     }
+    */
   }
 
   Future<void> signUp() async {
@@ -45,27 +56,37 @@ class _LoginScreenState extends State<LoginScreen> {
         password: passwordController.text.trim()
         );
 
+        /*
         if (mounted) {
           Navigator.pushReplacement(
             context, 
             MaterialPageRoute(builder: (builder) => const HomeScreen()),
           );
         }
-    } catch (e) {
+        */
+
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message ?? 'Signup failed';
+      });
+    }
+    /*
+    catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Sign up failed"))
         );
     }
+    */
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Login')),
       backgroundColor: Colors.blue[50],
-      body: Center(
-        child: 
-          //padding: const EdgeInsets.all(24.0)),
-          Column(
+      body: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.shopping_cart, size: 80, color: Colors.blue),
@@ -76,13 +97,27 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 40),
 
-              TextField(controller: emailController, decoration: const InputDecoration(hintText: "Email")),
+              TextField(
+                controller: emailController, decoration: const InputDecoration(labelText: "Email")),
               const SizedBox(height: 16),
-              TextField(controller: passwordController, obscureText: true, decoration: const InputDecoration(hintText: "Password")),
+              TextField(
+                controller: passwordController, 
+                obscureText: true, 
+                decoration: const InputDecoration(labelText: "Password")),
               const SizedBox(height: 24),
 
-              ElevatedButton(onPressed: signIn, child: const Text("Login")),
-              TextButton(onPressed: () {
+              if (errorMessage.isNotEmpty) 
+                Text(errorMessage, style: const TextStyle(color: Colors.red)),
+              
+              const SizedBox(height: 12),
+
+              ElevatedButton(
+                onPressed: signIn, 
+                child: const Text("Login")
+                ),
+
+              TextButton(
+                onPressed: () {
                 Navigator.push(
                   context, 
                   MaterialPageRoute(builder: (builder) => RegisterScreen()),
