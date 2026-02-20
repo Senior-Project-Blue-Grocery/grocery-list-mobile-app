@@ -11,6 +11,9 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
+// Firebase instance
+final FirebaseAuth _auth = FirebaseAuth.instance;
+
 
 class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
@@ -20,20 +23,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> signIn() async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await _auth.signInWithEmailAndPassword(
         email: emailController.text.trim(), 
         password: passwordController.text.trim()
         );
 
 
-        /*
+        // Navigate to home screen after login
         if (mounted) {
           Navigator.pushReplacement(
             context, 
-            MaterialPageRoute(builder: (builder) => const HomeScreen()),
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
             );
         }
-        */
 
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -41,43 +43,8 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
     
-    /*catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Login failed"))
-        );
-    }
-    */
   }
 
-  Future<void> signUp() async {
-    try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(), 
-        password: passwordController.text.trim()
-        );
-
-        /*
-        if (mounted) {
-          Navigator.pushReplacement(
-            context, 
-            MaterialPageRoute(builder: (builder) => const HomeScreen()),
-          );
-        }
-        */
-
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message ?? 'Signup failed';
-      });
-    }
-    /*
-    catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Sign up failed"))
-        );
-    }
-    */
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +90,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   MaterialPageRoute(builder: (builder) => RegisterScreen()),
                   );
               }, child: const Text("Create account")),
+
+              ElevatedButton(
+                onPressed: () => FirebaseAuth.instance.signOut(), 
+                child: const Text('Logout'),
+                )
             ],
         ),
       ),
