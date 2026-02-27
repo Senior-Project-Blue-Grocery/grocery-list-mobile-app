@@ -3,7 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AddItemsScreen extends StatefulWidget {
-  const AddItemsScreen({super.key});
+  final String groceryListId;
+
+  const AddItemsScreen({
+    super.key,
+    required this.groceryListId
+  });
 
   @override
   State<AddItemsScreen> createState() => _AddItemsScreenState();
@@ -14,29 +19,35 @@ class AddItemsScreen extends StatefulWidget {
 class _AddItemsScreenState extends State<AddItemsScreen> {
   final TextEditingController itemController = TextEditingController();
 
-  String get userId => FirebaseAuth.instance.currentUser!.uid;
+  final user = FirebaseAuth.instance.currentUser;
+  
 
   CollectionReference<Map<String, dynamic>> get itemsRef => FirebaseFirestore
       .instance
       .collection('users')
-      .doc(userId)
+      .doc(user!.uid)
+      .collection('grocery_lists')
+      .doc(widget.groceryListId)
       .collection('items');
 
+
+  // Add item to user list and database
   Future<void> addItem() async {
-    final text = itemController.text.trim();
-    if (text.isEmpty) return;
+    if (user == null) return;
 
+    final item_name = itemController.text.trim();
+    if (item_name.isEmpty) return;
 
-    // grocery item fields
+    // adds items to list using item reference
     await itemsRef.add({
-      'name': text,
-      'createdAt': Timestamp.now(),
-      'completed': false,
-    });
+        'name': item_name,
+        'createdAt': Timestamp.now(),
+      });
 
     itemController.clear();
   }
 
+  // Deletes item from user list
   Future<void> deleteItem(String id) async {
     await itemsRef.doc(id).delete();
   }
@@ -44,11 +55,10 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Grocery List'),
+        title: Text(widget.groceryListId),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
