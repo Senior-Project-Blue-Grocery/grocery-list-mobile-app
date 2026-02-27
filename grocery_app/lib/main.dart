@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grocery_app/screens/home_screen.dart';
 import 'package:grocery_app/screens/login_screen.dart';
+import 'package:grocery_app/screens/CatalogScreen.dart';
 import 'firebase_options.dart';
 
 void main() async {
