@@ -25,12 +25,16 @@ class GroceryApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      home: AuthGate(),
+      /*
       title: 'Grocery List',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       //home: const AuthGate(),
       home: const LoginScreen(),
+      */
+
     );
   }
 }

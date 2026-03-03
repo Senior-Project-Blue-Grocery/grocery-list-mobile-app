@@ -20,8 +20,8 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
   final TextEditingController itemController = TextEditingController();
 
   final user = FirebaseAuth.instance.currentUser;
-  
 
+  // reference of items in list 
   CollectionReference<Map<String, dynamic>> get itemsRef => FirebaseFirestore
       .instance
       .collection('users')
@@ -29,6 +29,14 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
       .collection('grocery_lists')
       .doc(widget.groceryListId)
       .collection('items');
+
+  // gets grocery list document
+  DocumentReference<Map<String, dynamic>> get listDoc => FirebaseFirestore
+      .instance
+      .collection('users')
+      .doc(user!.uid)
+      .collection('grocery_lists')
+      .doc(widget.groceryListId);
 
 
   // Add item to user list and database
@@ -44,12 +52,25 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
         'createdAt': Timestamp.now(),
       });
 
+    // update item count
+    await listDoc.update({
+      'itemCount': FieldValue.increment(1),
+    });
+
     itemController.clear();
   }
 
   // Deletes item from user list
   Future<void> deleteItem(String id) async {
+
     await itemsRef.doc(id).delete();
+
+
+    // decrease item count
+    await listDoc.update({
+      'itemCount': FieldValue.increment(-1),
+    });
+
   }
 
 
@@ -58,7 +79,7 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.groceryListId),
+        title: Text(listDoc.id),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -70,40 +91,40 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-            children: [ TextField(
-            //Expanded(
-                  //child: TextField(
-
+            child: Row(
+                children: [
+                  Expanded(
+                    child:TextField(
                     controller: itemController,
                     decoration: const InputDecoration(
                       hintText: 'Enter grocery item',
                       border: OutlineInputBorder(),
                     ),
                   ),
-                
+                ),
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: addItem,
                   child: const Text('Add'),
                 ),
-              
-            ],
-      ),
-      ),
+              ],
+            ),
+          ),
           Expanded(
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: itemsRef
                   .orderBy('createdAt', descending: true)
                   .snapshots(),
+
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text('No grocery items yet'));
+                  return const Center(
+                    child: Text('No grocery items yet')
+                    );
                 }
 
                 final docs = snapshot.data!.docs;
@@ -120,6 +141,7 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () => deleteItem(doc.id),
                       ),
+                    
                     );
                   },
                 );

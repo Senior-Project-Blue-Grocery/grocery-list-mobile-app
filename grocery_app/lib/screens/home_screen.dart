@@ -20,12 +20,13 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController listController = TextEditingController();
   final user = FirebaseAuth.instance.currentUser;
 
-  // get a reference if the user's grocery lists
+  // get a reference of the user's grocery lists
   CollectionReference<Map<String, dynamic>> get listsRef =>
       FirebaseFirestore.instance
           .collection('users')
           .doc(user!.uid)
           .collection('grocery_lists');
+
 
   // create new grocery list
   Future<void> addList() async {
@@ -35,7 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     await listsRef.add({
       'name': listName,
-      'createdAt': Timestamp.now()
+      'createdAt': Timestamp.now(),
+      'itemCount': 0,
     });
 
     listController.clear();
@@ -102,9 +104,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, index) {
                     final doc = docs[index];
                     final name = doc.data()['name'] ?? '';
+                    final count = doc.data()['itemCount'] ?? 0;
 
                     return ListTile(
                       title: Text(name),
+                      subtitle: Text('$count items'),
                       onTap: () {
                         Navigator.push(
                           context, 

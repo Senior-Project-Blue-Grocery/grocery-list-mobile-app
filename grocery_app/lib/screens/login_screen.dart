@@ -28,15 +28,6 @@ class _LoginScreenState extends State<LoginScreen> {
         password: passwordController.text.trim()
         );
 
-
-        // Navigate to home screen after login
-        if (mounted) {
-          Navigator.pushReplacement(
-            context, 
-            MaterialPageRoute(builder: (_) => const HomeScreen()),
-            );
-        }
-
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message ?? 'Login failed';
