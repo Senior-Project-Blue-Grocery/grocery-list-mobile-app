@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grocery_app/screens/CatalogScreen.dart';
 import 'package:grocery_app/screens/home_screen.dart';
 import 'package:grocery_app/screens/login_screen.dart';
 
@@ -25,7 +26,8 @@ class AuthGate extends StatelessWidget {
 
         // If user is logged in → go to HomeScreen
         if (snapshot.hasData /*&& snapshot.data != null*/) {
-            return const HomeScreen();
+            return const CatalogScreen();
+            //return const HomeScreen();
             //return const LoginScreen();
         } else {
             // Otherwise → show LoginScreen

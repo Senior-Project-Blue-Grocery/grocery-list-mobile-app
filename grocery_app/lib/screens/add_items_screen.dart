@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grocery_app/models/grocery_item.dart';
+import 'package:grocery_app/services/firestore_service.dart';
 
 class AddItemsScreen extends StatefulWidget {
   final String groceryListId;
@@ -14,7 +16,7 @@ class AddItemsScreen extends StatefulWidget {
   State<AddItemsScreen> createState() => _AddItemsScreenState();
 }
 
-
+final FirestoreService firestoreDB = FirestoreService();
 
 class _AddItemsScreenState extends State<AddItemsScreen> {
   final TextEditingController itemController = TextEditingController();
@@ -29,6 +31,18 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
       .collection('grocery_lists')
       .doc(widget.groceryListId)
       .collection('items');
+
+
+  // reading items from firestore
+  Stream<List<GroceryItem>> getItems(String listId) {
+    return FirebaseFirestore.instance
+    .collection('groceryLists')
+    .doc(listId)
+    .collection('items')
+    .snapshots()
+    .map((snapshot) =>
+        snapshot.docs.map((doc) => GroceryItem.fromFirestore(doc)).toList());
+  }
 
   // gets grocery list document
   DocumentReference<Map<String, dynamic>> get listDoc => FirebaseFirestore

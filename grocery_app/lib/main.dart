@@ -4,6 +4,7 @@ import 'package:grocery_app/auth/auth_gate.dart';
 import 'package:grocery_app/screens/home_screen.dart';
 import 'package:grocery_app/screens/login_screen.dart';
 import 'package:grocery_app/screens/CatalogScreen.dart';
+import 'package:grocery_app/services/populate_catalog.dart';
 import 'firebase_options.dart';
 
 

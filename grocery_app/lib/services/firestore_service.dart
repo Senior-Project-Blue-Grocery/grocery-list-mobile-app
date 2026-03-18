@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:grocery_app/models/catalog_item.dart';
 import 'package:grocery_app/models/grocery_item.dart';
 import 'package:grocery_app/models/grocery_list.dart';
 
@@ -69,7 +70,7 @@ class FirestoreService {
   //
 
   // add an item to a list
-  Future<void> addItem(String listId, GroceryItem item) async {
+  Future<void> addItem(String userId, String listId, GroceryItem item) async {
     await databaseConnection
       .collection('groceryLists')
       .doc(listId)
@@ -126,17 +127,32 @@ class FirestoreService {
   }
 
 
-  /*
+  
   //
   // GLOBAL ITEM CATALOG 
   //
 
+  List<String> generateKeywords(String item) {
+    item = item.toLowerCase();
+    List<String> keywords = [];
+
+    for (int i = 1; i <= item.length; i++) {
+      keywords.add(item.substring(0, i));
+    }
+
+    return keywords;
+  }
+
+  
+  
   Future<void> addCatalogItem(CatalogItem item) async {
     await databaseConnection
-      .collection('itemsCatalog')
+      .collection('catalog')
       .add(item.toMap());
   }
 
+
+/*
   Future<List<CatalogItem>> searchCatalog(String query) async {
     final searchQuery = query.toLowerCase();
 
@@ -151,6 +167,7 @@ class FirestoreService {
       .toList();
   }
 
-  */
+*/
+  
 
 }
