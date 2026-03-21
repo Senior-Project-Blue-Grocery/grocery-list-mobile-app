@@ -12,13 +12,14 @@ class FirestoreService {
 
   // create new list
   Future<void> createList(GroceryList list) async {
-    await databaseConnection.collection('groceryLists').doc(list.id).set(list.toMap());
+    await databaseConnection.collection('groceryLists').add(list.toMap());
   }
 
+  // show user's lists
   Stream<List<GroceryList>> getUserLists(String userId) {
     return databaseConnection
       .collection('groceryLists')
-      .where('sharedWith', arrayContains: userId)
+      .where('ownerId', isEqualTo:  userId)
       .snapshots()
       .map((snapshot) => snapshot.docs
         .map((doc) => GroceryList.fromFirestore(doc))
@@ -105,7 +106,7 @@ class FirestoreService {
   }
 
   // delete item from list
-  Future<void> deleteItem(String listId, String itemId, bool value) async {
+  Future<void> deleteItem(String listId, String itemId) async {
     await databaseConnection
       .collection('groceryLists')
       .doc(listId)

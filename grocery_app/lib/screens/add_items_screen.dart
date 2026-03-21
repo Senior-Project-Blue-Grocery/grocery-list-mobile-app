@@ -2,14 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/models/grocery_item.dart';
+import 'package:grocery_app/models/grocery_list.dart';
 import 'package:grocery_app/services/firestore_service.dart';
 
 class AddItemsScreen extends StatefulWidget {
-  final String groceryListId;
+  final GroceryList groceryList;
 
   const AddItemsScreen({
     super.key,
-    required this.groceryListId
+    required this.groceryList
   });
 
   @override
@@ -23,77 +24,16 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
 
   final user = FirebaseAuth.instance.currentUser;
 
-  // reference of items in list 
-  CollectionReference<Map<String, dynamic>> get itemsRef => FirebaseFirestore
-      .instance
-      .collection('users')
-      .doc(user!.uid)
-      .collection('grocery_lists')
-      .doc(widget.groceryListId)
-      .collection('items');
-
-
-  // reading items from firestore
-  Stream<List<GroceryItem>> getItems(String listId) {
-    return FirebaseFirestore.instance
-    .collection('groceryLists')
-    .doc(listId)
-    .collection('items')
-    .snapshots()
-    .map((snapshot) =>
-        snapshot.docs.map((doc) => GroceryItem.fromFirestore(doc)).toList());
-  }
-
-  // gets grocery list document
-  DocumentReference<Map<String, dynamic>> get listDoc => FirebaseFirestore
-      .instance
-      .collection('users')
-      .doc(user!.uid)
-      .collection('grocery_lists')
-      .doc(widget.groceryListId);
-
-
-  // Add item to user list and database
-  Future<void> addItem() async {
-    if (user == null) return;
-
-    final item_name = itemController.text.trim();
-    if (item_name.isEmpty) return;
-
-    // adds items to list using item reference
-    await itemsRef.add({
-        'name': item_name,
-        'createdAt': Timestamp.now(),
-      });
-
-    // update item count
-    await listDoc.update({
-      'itemCount': FieldValue.increment(1),
-    });
-
-    itemController.clear();
-  }
-
-  // Deletes item from user list
-  Future<void> deleteItem(String id) async {
-
-    await itemsRef.doc(id).delete();
-
-
-    // decrease item count
-    await listDoc.update({
-      'itemCount': FieldValue.increment(-1),
-    });
-
-  }
+  FirestoreService firestoreService = FirestoreService();
 
 
   @override
   Widget build(BuildContext context) {
+    final groceryList = widget.groceryList;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(listDoc.id),
+        title: Text(groceryList.name),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -118,42 +58,53 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: addItem,
+                  onPressed: () async {
+                    await firestoreService.addItem(
+                      user!.uid, 
+                      groceryList.id, 
+                      GroceryItem(
+                        id: '', 
+                        name: itemController.text, 
+                        quantity: 1, 
+                        completed: false));
+                  },
                   child: const Text('Add'),
                 ),
               ],
             ),
           ),
           Expanded(
-            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: itemsRef
-                  .orderBy('createdAt', descending: true)
-                  .snapshots(),
+            child: StreamBuilder<List<GroceryItem>>(
+              stream: firestoreService.getItems(groceryList.id),
 
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(
                     child: Text('No grocery items yet')
                     );
                 }
 
-                final docs = snapshot.data!.docs;
+                final items = snapshot.data!;
 
                 return ListView.builder(
-                  itemCount: docs.length,
+                  itemCount: items.length,
                   itemBuilder: (context, index) {
-                    final doc = docs[index];
-                    final name = doc.data()['name'] ?? '';
+                    final item = items[index];
+                    
 
                     return ListTile(
-                      title: Text(name),
+                      title: Text(item.name),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => deleteItem(doc.id),
+                        onPressed: () async {
+                          await firestoreService.deleteItem(
+                            groceryList.id, 
+                            item.id);
+                        },
                       ),
                     
                     );
