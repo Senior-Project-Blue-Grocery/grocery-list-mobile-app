@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grocery_app/screens/add_items_screen.dart';
 import 'package:grocery_app/services/firestore_service.dart';
 import 'package:grocery_app/services/populate_catalog.dart';
+import 'package:grocery_app/services/populate_catalog.dart';
 
 // this screen adds grocery lists to
 // users/{uid}/grocery_lists/{listId} then navigates to

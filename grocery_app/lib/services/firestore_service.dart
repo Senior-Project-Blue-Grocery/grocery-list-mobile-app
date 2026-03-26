@@ -151,6 +151,13 @@ class FirestoreService {
       .add(item.toMap());
   }
 
+Stream<List<CatalogItem>> getCatalogItems() {
+  return databaseConnection
+      .collection('catalog')
+      .snapshots()
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => CatalogItem.fromSnapshot(doc)).toList());
+}
 
 /*
   Future<List<CatalogItem>> searchCatalog(String query) async {
