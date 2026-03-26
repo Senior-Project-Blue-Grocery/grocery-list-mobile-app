@@ -52,6 +52,14 @@ class _CatalogScreenState extends State<CatalogScreen> {
     return cleaned;
   }
 
+  String _formatCategoryTitle(String value) {
+    return value
+        .split(' ')
+        .map((word) =>
+            word.isEmpty ? word : word[0].toUpperCase() + word.substring(1))
+        .join(' ');
+  }
+
   Future<void> _openAisleScreen() async {
     final selectedAisle = await Navigator.push<String>(
       context,
@@ -68,6 +76,15 @@ class _CatalogScreenState extends State<CatalogScreen> {
         ),
       );
     }
+  }
+
+  void _openCategoryResults(String aisle) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AisleResultsScreen(aisle: aisle),
+      ),
+    );
   }
 
   void _openItemDetail(CatalogItem item) {
@@ -113,16 +130,35 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
           final newProducts = filteredItems.take(10).toList();
 
-          final poultry = filteredItems.where((item) {
-            final c = item.category.toLowerCase();
-            final n = item.name.toLowerCase();
+          final groupedItems = <String, List<CatalogItem>>{};
+          for (final item in filteredItems) {
+            groupedItems.putIfAbsent(item.category, () => []);
+            groupedItems[item.category]!.add(item);
+          }
 
-            return c.contains('meat') ||
-                c.contains('seafood') ||
-                c.contains('poultry') ||
-                n.contains('chicken') ||
-                n.contains('turkey');
-          }).toList();
+          final categoryOrder = [
+            'produce',
+            'dairy',
+            'bakery',
+            'meat & seafood',
+            'drinks',
+            'snacks',
+            'frozen',
+            'pantry',
+            'condiments',
+            'spices',
+          ];
+
+          final orderedCategories = groupedItems.keys.toList()
+            ..sort((a, b) {
+              final aIndex = categoryOrder.indexOf(a);
+              final bIndex = categoryOrder.indexOf(b);
+
+              if (aIndex == -1 && bIndex == -1) return a.compareTo(b);
+              if (aIndex == -1) return 1;
+              if (bIndex == -1) return -1;
+              return aIndex.compareTo(bIndex);
+            });
 
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
@@ -136,11 +172,13 @@ class _CatalogScreenState extends State<CatalogScreen> {
                 },
               ),
               const SizedBox(height: 18),
+
               _SectionHeader(
                 title: "Shop by Aisle",
                 onTap: _openAisleScreen,
               ),
               const SizedBox(height: 10),
+
               SizedBox(
                 height: 110,
                 child: ListView.separated(
@@ -154,23 +192,20 @@ class _CatalogScreenState extends State<CatalogScreen> {
                       imageUrl: c.imageUrl,
                       onTap: () {
                         final aisle = _mapCategoryLabelToQuery(c.label);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => AisleResultsScreen(aisle: aisle),
-                          ),
-                        );
+                        _openCategoryResults(aisle);
                       },
                     );
                   },
                 ),
               ),
+
               const SizedBox(height: 24),
               _SectionHeader(
                 title: "New Products for you",
                 onTap: () {},
               ),
               const SizedBox(height: 10),
+
               SizedBox(
                 height: 255,
                 child: newProducts.isEmpty
@@ -185,26 +220,38 @@ class _CatalogScreenState extends State<CatalogScreen> {
                         ),
                       ),
               ),
+
               const SizedBox(height: 24),
-              _SectionHeader(
-                title: "Poultry",
-                onTap: () {},
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 255,
-                child: poultry.isEmpty
-                    ? const Center(child: Text('No poultry items found'))
-                    : ListView.separated(
+
+              ...orderedCategories.map((category) {
+                final items = groupedItems[category] ?? [];
+                if (items.isEmpty) return const SizedBox.shrink();
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SectionHeader(
+                      title: _formatCategoryTitle(category),
+                      onTap: () => _openCategoryResults(category),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 255,
+                      child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        itemCount: poultry.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 12),
+                        itemCount: items.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(width: 12),
                         itemBuilder: (context, i) => _ProductCard(
-                          item: poultry[i],
-                          onTap: () => _openItemDetail(poultry[i]),
+                          item: items[i],
+                          onTap: () => _openItemDetail(items[i]),
                         ),
                       ),
-              ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                );
+              }),
             ],
           );
         },
@@ -247,8 +294,10 @@ class _CatalogScreenState extends State<CatalogScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: ""),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart_outlined), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications_none), label: ""),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart_outlined), label: ""),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.notifications_none), label: ""),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: ""),
         ],
       ),
