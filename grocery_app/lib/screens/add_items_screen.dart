@@ -96,18 +96,19 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
                     final item = items[index];
                     
 
-                    return ListTile(
-                      title: Text(item.name),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () async {
-                          await firestoreService.deleteItem(
-                            groceryList.id, 
-                            item.id);
-                        },
-                      ),
-                    
-                    );
+                   return ListTile(
+  title: Text(item.name),
+  subtitle: Text('Qty: ${item.quantity}'),
+  trailing: IconButton(
+    icon: const Icon(Icons.delete, color: Colors.red),
+    onPressed: () async {
+      await firestoreService.deleteItem(
+        groceryList.id,
+        item.id,
+      );
+    },
+  ),
+);
                   },
                 );
               },
