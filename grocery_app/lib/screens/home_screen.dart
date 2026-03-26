@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:grocery_app/models/grocery_list.dart';
 import 'package:grocery_app/screens/add_items_screen.dart';
 import 'package:grocery_app/services/firestore_service.dart';
 import 'package:grocery_app/services/populate_catalog.dart';
@@ -24,40 +25,17 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController listController = TextEditingController();
   final user = FirebaseAuth.instance.currentUser;
 
-  // get a reference of the user's grocery lists
-  CollectionReference<Map<String, dynamic>> get listsRef =>
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(user!.uid)
-          .collection('grocery_lists');
+  FirestoreService firestoreService = FirestoreService();
 
 
-  // create new grocery list
-  Future<void> addList() async {
-    final listName = listController.text.trim();
-
-    if (listName.isEmpty) return;
-
-    await listsRef.add({
-      'name': listName,
-      'createdAt': Timestamp.now(),
-      'itemCount': 0,
-    });
-
-    listController.clear();
-  }       
-
-
-  // deletes grocery list
-  Future<void> deleteList(String id) async {
-    await listsRef.doc(id).delete();
-  }
-
+// used once to initially populate the global catalog in the database 
+/*
 @override
-Future<void> initState() async {
+void initState() {
   super.initState();
-  await PopulateCatalog().seedCatalog();
+  PopulateCatalog().seedCatalog();
 }
+*/
 
  @override
   Widget build(BuildContext context) {
@@ -82,53 +60,71 @@ Future<void> initState() async {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: addList, 
+                  // create a grocery list obj with 0 items, owner is user id of person currently logged in
+                  onPressed: () async {           
+                    await firestoreService.createList(GroceryList(
+                      id: '',
+                      name: listController.text, 
+                      ownerId: user!.uid, 
+                      sharedWith: [], 
+                      itemCount: 0)
+                      );
+                  },
                   child: const Text('Add')
                 ),
               ],
             ),
           ),
-          Expanded(
-            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: listsRef
-                  .orderBy('createdAt', descending: true)
-                  .snapshots(),
+          Expanded( 
+            child: StreamBuilder<List<GroceryList>>(
+              stream: firestoreService.getUserLists(user!.uid),
            
               builder: (context, snapshot) {
+
+                // loading
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                // empty data
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(
                     child: Text('No grocery lists yet'),
                   );
                 }
+                // handle errors
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                }
 
-                final docs = snapshot.data!.docs;
+                final lists = snapshot.data!;
 
                 return ListView.builder(
-                  itemCount: docs.length,
+                  itemCount: lists.length,
                   itemBuilder: (context, index) {
-                    final doc = docs[index];
-                    final name = doc.data()['name'] ?? '';
-                    final count = doc.data()['itemCount'] ?? 0;
+                    final list = lists[index];
+                    
+                    final count = list.itemCount;
 
                     return ListTile(
-                      title: Text(name),
+                      title: Text(list.name),
                       subtitle: Text('$count items'),
                       onTap: () {
                         Navigator.push(
                           context, 
                           MaterialPageRoute(
                             builder: (_) => AddItemsScreen(
-                              groceryListId: doc.id
+                              groceryList: list
                             ),
                           ),
                         );
                       },
                       trailing: IconButton(
-                        onPressed: () => deleteList(doc.id), 
+                        // delete selected list
+                        onPressed: () async {
+                          await firestoreService.deleteList(list.id);
+                        }, 
                         icon: Icon(Icons.delete, color: Colors.red),
                       ),
                     );
