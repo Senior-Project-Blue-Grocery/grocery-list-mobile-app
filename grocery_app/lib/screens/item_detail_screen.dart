@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:grocery_app/models/catalog_item.dart';
 import 'package:grocery_app/models/cart_item.dart';
 import 'package:grocery_app/services/firestore_service.dart';
@@ -32,18 +31,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
       setState(() {
         quantity--;
       });
-    }
-  }
-
-  Future<String?> _getImageUrl() async {
-    try {
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child('catalog_images/${widget.item.name.toLowerCase()}.jpg');
-
-      return await ref.getDownloadURL();
-    } catch (e) {
-      return null;
     }
   }
 
@@ -87,41 +74,25 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
               borderRadius: BorderRadius.circular(16),
               child: AspectRatio(
                 aspectRatio: 1,
-                child: FutureBuilder<String?>(
-                  future: _getImageUrl(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container(
-                        color: Colors.grey.shade200,
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    }
-
-                    if (!snapshot.hasData || snapshot.data == null) {
-                      return Container(
+                child: item.imageUrl.isEmpty
+                    ? Container(
                         color: Colors.grey.shade200,
                         child: const Icon(
                           Icons.image_not_supported_outlined,
                           size: 60,
                         ),
-                      );
-                    }
-
-                    return Image.network(
-                      snapshot.data!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        color: Colors.grey.shade200,
-                        child: const Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 60,
+                      )
+                    : Image.network(
+                        item.imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: Colors.grey.shade200,
+                          child: const Icon(
+                            Icons.image_not_supported_outlined,
+                            size: 60,
+                          ),
                         ),
                       ),
-                    );
-                  },
-                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -149,9 +120,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'N/A',
-              style: TextStyle(
+            Text(
+              '\$${item.price.toStringAsFixed(2)}',
+              style: const TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.w900,
               ),
@@ -172,20 +143,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                   child: Text(
                     'This item belongs to the ${item.category} category.',
-                    style: const TextStyle(fontSize: 15),
-                  ),
-                ),
-              ],
-            ),
-            ExpansionTile(
-              title: const Text('Keywords'),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  child: Text(
-                    item.keywords.isEmpty
-                        ? 'No keywords available.'
-                        : item.keywords.join(', '),
                     style: const TextStyle(fontSize: 15),
                   ),
                 ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:grocery_app/models/catalog_item.dart';
 import 'package:grocery_app/models/cart_item.dart';
 import 'package:grocery_app/screens/item_detail_screen.dart';
@@ -173,17 +172,6 @@ class _AisleProductCard extends StatelessWidget {
     required this.onQuickAdd,
   });
 
-  Future<String?> _getImageUrl() async {
-    try {
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child('catalog_images/${item.name.toLowerCase()}.jpg');
-      return await ref.getDownloadURL();
-    } catch (_) {
-      return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -199,32 +187,19 @@ class _AisleProductCard extends StatelessWidget {
                   child: Container(
                     width: double.infinity,
                     color: Colors.grey.shade100,
-                    child: FutureBuilder<String?>(
-                      future: _getImageUrl(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          );
-                        }
-
-                        if (!snapshot.hasData || snapshot.data == null) {
-                          return const Center(
+                    child: item.imageUrl.isEmpty
+                        ? const Center(
                             child: Icon(Icons.image_not_supported_outlined),
-                          );
-                        }
-
-                        return Image.network(
-                          snapshot.data!,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                          errorBuilder: (_, __, ___) => const Center(
-                            child: Icon(Icons.image_not_supported_outlined),
+                          )
+                        : Image.network(
+                            item.imageUrl,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            errorBuilder: (_, __, ___) => const Center(
+                              child: Icon(Icons.image_not_supported_outlined),
+                            ),
                           ),
-                        );
-                      },
-                    ),
                   ),
                 ),
                 Positioned(
@@ -244,9 +219,9 @@ class _AisleProductCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          const Text(
-            'N/A',
-            style: TextStyle(
+          Text(
+            '\$${item.price.toStringAsFixed(2)}',
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w800,
             ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:grocery_app/models/catalog_item.dart';
 import 'package:grocery_app/screens/account_screen.dart';
 import 'package:grocery_app/screens/aisle_results_screen.dart';
@@ -100,38 +99,52 @@ class _CatalogScreenState extends State<CatalogScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Item Catalogue Page"),
-        elevation: 0,
+        titleSpacing: 0,
+        title: Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: TextField(
+            onChanged: (value) {
+              setState(() {
+                _searchQuery = value.trim().toLowerCase();
+              });
+            },
+            decoration: InputDecoration(
+              hintText: 'Ask or search anything',
+              prefixIcon: const Icon(Icons.search),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(vertical: 0),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(28),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(28),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+            ),
+          ),
+        ),
       ),
       body: StreamBuilder<List<CatalogItem>>(
         stream: _firestoreService.getCatalogItems(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }
-
-          final allItems = snapshot.data ?? [];
+          final allItems = snapshot.data!;
 
           final filteredItems = allItems.where((item) {
             if (_searchQuery.isEmpty) return true;
 
-            final query = _searchQuery.toLowerCase();
-
-            return item.name.toLowerCase().contains(query) ||
-                item.category.toLowerCase().contains(query) ||
-                item.keywords.any((k) => k.contains(query));
+            return item.name.toLowerCase().contains(_searchQuery) ||
+                item.category.toLowerCase().contains(_searchQuery) ||
+                item.keywords.any((k) => k.toLowerCase().contains(_searchQuery));
           }).toList();
 
-          final newProducts = filteredItems.take(10).toList();
-
           final groupedItems = <String, List<CatalogItem>>{};
-          for (final item in filteredItems) {
+          for (final item in allItems) {
             groupedItems.putIfAbsent(item.category, () => []);
             groupedItems[item.category]!.add(item);
           }
@@ -160,98 +173,130 @@ class _CatalogScreenState extends State<CatalogScreen> {
               return aIndex.compareTo(bIndex);
             });
 
+          final newProducts = allItems.take(10).toList();
+          final isSearching = _searchQuery.isNotEmpty;
+
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
             children: [
-              _SearchBar(
-                hintText: "Search",
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value.trim();
-                  });
-                },
-              ),
-              const SizedBox(height: 18),
-
-              _SectionHeader(
-                title: "Shop by Aisle",
-                onTap: _openAisleScreen,
-              ),
-              const SizedBox(height: 10),
-
-              SizedBox(
-                height: 110,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: categories.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 14),
-                  itemBuilder: (context, i) {
-                    final c = categories[i];
-                    return _CategoryChip(
-                      label: c.label,
-                      imageUrl: c.imageUrl,
-                      onTap: () {
-                        final aisle = _mapCategoryLabelToQuery(c.label);
-                        _openCategoryResults(aisle);
-                      },
-                    );
-                  },
+              if (isSearching) ...[
+                Text(
+                  'Search Results',
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 12),
+                Text(
+                  '${filteredItems.length} items',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                if (filteredItems.isEmpty)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 24),
+                      child: Text('No items found'),
+                    ),
+                  )
+                else
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: filteredItems.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 14,
+                      mainAxisSpacing: 18,
+                      childAspectRatio: 0.58,
+                    ),
+                    itemBuilder: (context, i) => _ProductCard(
+                      item: filteredItems[i],
+                      onTap: () => _openItemDetail(filteredItems[i]),
+                    ),
+                  ),
+              ] else ...[
+                _SectionHeader(
+                  title: "Shop by Aisle",
+                  onTap: _openAisleScreen,
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 110,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categories.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 14),
+                    itemBuilder: (context, i) {
+                      final c = categories[i];
+                      return _CategoryChip(
+                        label: c.label,
+                        imageUrl: c.imageUrl,
+                        onTap: () {
+                          final aisle = _mapCategoryLabelToQuery(c.label);
+                          _openCategoryResults(aisle);
+                        },
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
+                _SectionHeader(
+                  title: "New Products for you",
+                  onTap: () {},
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 255,
+                  child: newProducts.isEmpty
+                      ? const Center(child: Text('No items found'))
+                      : ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: newProducts.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(width: 12),
+                          itemBuilder: (context, i) => _ProductCard(
+                            item: newProducts[i],
+                            onTap: () => _openItemDetail(newProducts[i]),
+                          ),
+                        ),
+                ),
+                const SizedBox(height: 24),
+                ...orderedCategories.map((category) {
+                  final items = groupedItems[category] ?? [];
+                  if (items.isEmpty) return const SizedBox.shrink();
 
-              const SizedBox(height: 24),
-              _SectionHeader(
-                title: "New Products for you",
-                onTap: () {},
-              ),
-              const SizedBox(height: 10),
-
-              SizedBox(
-                height: 255,
-                child: newProducts.isEmpty
-                    ? const Center(child: Text('No items found'))
-                    : ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: newProducts.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 12),
-                        itemBuilder: (context, i) => _ProductCard(
-                          item: newProducts[i],
-                          onTap: () => _openItemDetail(newProducts[i]),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _SectionHeader(
+                        title: _formatCategoryTitle(category),
+                        onTap: () => _openCategoryResults(category),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        height: 255,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: items.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(width: 12),
+                          itemBuilder: (context, i) => _ProductCard(
+                            item: items[i],
+                            onTap: () => _openItemDetail(items[i]),
+                          ),
                         ),
                       ),
-              ),
-
-              const SizedBox(height: 24),
-
-              ...orderedCategories.map((category) {
-                final items = groupedItems[category] ?? [];
-                if (items.isEmpty) return const SizedBox.shrink();
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _SectionHeader(
-                      title: _formatCategoryTitle(category),
-                      onTap: () => _openCategoryResults(category),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: 255,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: items.length,
-                        separatorBuilder: (_, __) =>
-                            const SizedBox(width: 12),
-                        itemBuilder: (context, i) => _ProductCard(
-                          item: items[i],
-                          onTap: () => _openItemDetail(items[i]),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-                );
-              }),
+                      const SizedBox(height: 24),
+                    ],
+                  );
+                }),
+              ],
             ],
           );
         },
@@ -314,18 +359,6 @@ class _ProductCard extends StatelessWidget {
     required this.onTap,
   });
 
-  Future<String?> _getImageUrl() async {
-    try {
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child('catalog_images/${item.name.toLowerCase()}.jpg');
-
-      return await ref.getDownloadURL();
-    } catch (e) {
-      return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -340,35 +373,19 @@ class _ProductCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               child: AspectRatio(
                 aspectRatio: 1,
-                child: FutureBuilder<String?>(
-                  future: _getImageUrl(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container(
+                child: item.imageUrl.isEmpty
+                    ? Container(
                         color: Colors.grey.shade200,
-                        child: const Center(
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                        child: const Icon(Icons.image_not_supported_outlined),
+                      )
+                    : Image.network(
+                        item.imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: Colors.grey.shade200,
+                          child: const Icon(Icons.image_not_supported_outlined),
                         ),
-                      );
-                    }
-
-                    if (!snapshot.hasData || snapshot.data == null) {
-                      return Container(
-                        color: Colors.grey.shade200,
-                        child: const Icon(Icons.image_not_supported_outlined),
-                      );
-                    }
-
-                    return Image.network(
-                      snapshot.data!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        color: Colors.grey.shade200,
-                        child: const Icon(Icons.image_not_supported_outlined),
                       ),
-                    );
-                  },
-                ),
               ),
             ),
             const SizedBox(height: 10),
@@ -393,41 +410,14 @@ class _ProductCard extends StatelessWidget {
               style: const TextStyle(fontSize: 12),
             ),
             const SizedBox(height: 6),
-            const Text(
-              "N/A",
-              style: TextStyle(
+            Text(
+              '\$${item.price.toStringAsFixed(2)}',
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SearchBar extends StatelessWidget {
-  final String hintText;
-  final ValueChanged<String> onChanged;
-
-  const _SearchBar({
-    required this.hintText,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        prefixIcon: const Icon(Icons.search),
-        hintText: hintText,
-        filled: true,
-        fillColor: Colors.grey.shade100,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
         ),
       ),
     );

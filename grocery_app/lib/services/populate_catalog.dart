@@ -61,6 +61,8 @@ class PopulateCatalog {
             category: 'produce',
             keywords: generateKeywords(item),
             name: item,
+            price: 0,
+            imageUrl: '',
           ),
         );
 
@@ -100,6 +102,8 @@ class PopulateCatalog {
           category: 'dairy',
           keywords: generateKeywords(item),
           name: item,
+          price: 0,
+          imageUrl: '',
         ),
       );
     }
@@ -134,6 +138,8 @@ class PopulateCatalog {
           category: 'meat & seafood',
           keywords: generateKeywords(item),
           name: item,
+          price: 0,
+          imageUrl: '',
         ),
       );
     }
@@ -168,6 +174,8 @@ class PopulateCatalog {
           category: 'bakery',
           keywords: generateKeywords(item),
           name: item,
+          price: 0,
+          imageUrl: '',
         ),
       );
     }
@@ -203,6 +211,8 @@ class PopulateCatalog {
           category: 'pantry',
           keywords: generateKeywords(item),
           name: item,
+          price: 0,
+          imageUrl: '',
         ),
       );
     }
@@ -228,6 +238,8 @@ class PopulateCatalog {
           category: 'condiments',
           keywords: generateKeywords(item),
           name: item,
+          price: 0,
+          imageUrl: '',
         ),
       );
     }
@@ -251,6 +263,8 @@ class PopulateCatalog {
           category: 'spices',
           keywords: generateKeywords(item),
           name: item,
+          price: 0,
+          imageUrl: '',
         ),
       );
     }
@@ -279,6 +293,8 @@ class PopulateCatalog {
           category: 'frozen',
           keywords: generateKeywords(item),
           name: item,
+          price: 0,
+          imageUrl: '',
         ),
       );
     }
@@ -303,6 +319,8 @@ class PopulateCatalog {
           category: 'snacks',
           keywords: generateKeywords(item),
           name: item,
+          price: 0,
+          imageUrl: '',
         ),
       );
     }
@@ -328,6 +346,8 @@ class PopulateCatalog {
           category: 'drinks',
           keywords: generateKeywords(item),
           name: item,
+          price: 0,
+          imageUrl: '',
         ),
       );
     }
