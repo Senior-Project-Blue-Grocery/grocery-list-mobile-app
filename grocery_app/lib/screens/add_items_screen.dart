@@ -1,9 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/models/grocery_item.dart';
 import 'package:grocery_app/models/grocery_list.dart';
+import 'package:grocery_app/screens/account_screen.dart';
+import 'package:grocery_app/screens/cart_screen.dart';
 import 'package:grocery_app/screens/home_screen.dart';
+import 'package:grocery_app/screens/catalogscreen.dart';
 import 'package:grocery_app/services/firestore_service.dart';
 
 /*
@@ -19,23 +21,17 @@ class AddItemsScreen extends StatefulWidget {
 
   const AddItemsScreen({
     super.key,
-    required this.groceryList
+    required this.groceryList,
   });
 
   @override
   State<AddItemsScreen> createState() => _AddItemsScreenState();
 }
 
-final FirestoreService firestoreDB = FirestoreService();
-
 class _AddItemsScreenState extends State<AddItemsScreen> {
-  final TextEditingController itemController = TextEditingController();
-
   final user = FirebaseAuth.instance.currentUser;
-  int _navIndex = 1;
-
-  FirestoreService firestoreService = FirestoreService();
-
+  final FirestoreService firestoreService = FirestoreService();
+  int _navIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -44,54 +40,23 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(groceryList.name),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => FirebaseAuth.instance.signOut(),
-          ),
-        ],
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: Row(
-                children: [
-                  Expanded(
-                    child:TextField(
-                    controller: itemController,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter grocery item',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: () async {
-                    await firestoreService.addItem(
-                      user!.uid, 
-                      groceryList.id, 
-                      GroceryItem(
-                        id: '', 
-                        name: itemController.text, 
-                        quantity: 1, 
-                        completed: false));
-                  },
-                  child: const Text('Add'),
-                ),
-              ],
-            ),
-          ),
           Expanded(
             child: StreamBuilder<List<GroceryItem>>(
               stream: firestoreService.getItems(groceryList.id),
-
               builder: (context, snapshot) {
 
                 // loading
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
                 }
 
                 // no data
@@ -111,39 +76,126 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
                 final items = snapshot.data!;
 
                 return ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: items.length,
                   itemBuilder: (context, index) {
                     final item = items[index];
-                    //final data = item.data() as Map<String, dynamic>;
                     
-                    
+
                     return ListTile(
                       title: Text(item.name),
+                      subtitle: Text('Qty: ${item.quantity}'),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () async {
                           await firestoreService.deleteItem(
-                            groceryList.id, 
-                            item.id);
+                            groceryList.id,
+                            item.id,
+                          );
                         },
                       ),
                     );
-                    
-                    
-                    /*
-                    return CheckboxListTile(
-                      title: Text(item.name),
-                      value: item['completed'] ?? false,
-                      onChanged: (bool? value) async {
-                        await firestoreService.toggleItem(groceryList.id, item.id, value!);
-                      },
-                    );
-                    */
-                    
                   },
                 );
               },
             ),
+          ),
+
+          // 🔥 ADD ITEMS BUTTON
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+            child: SizedBox(
+              width: double.infinity,
+              height: 55,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CatalogScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: const Text(
+                  'Add Items',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+
+      // 🔥 BOTTOM NAV
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF2E7DFF),
+        selectedIconTheme: const IconThemeData(
+          color: Colors.white,
+          size: 28,
+        ),
+        unselectedIconTheme: const IconThemeData(
+          color: Colors.white70,
+        ),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        currentIndex: _navIndex,
+        onTap: (i) {
+          if (i == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+            );
+          } 
+          else if (i == 1) {
+            // 🔥 SEARCH → CATALOG
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const CatalogScreen()),
+            );
+          }
+          else if (i == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => CartScreen()),
+            );
+          } 
+          else if (i == 4) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AccountScreen()),
+            );
+          } 
+          else {
+            setState(() {
+              _navIndex = i;
+            });
+          }
+        },
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: ""),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: ""),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart_outlined),
+            label: "",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications_none),
+            label: "",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: "",
           ),
         ],
       ),

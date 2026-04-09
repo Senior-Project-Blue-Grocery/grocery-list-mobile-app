@@ -31,7 +31,7 @@ class AuthGate extends StatelessWidget {
         // If user is logged in → go to HomeScreen
         if (snapshot.hasData /*&& snapshot.data != null*/) {
             //return const CatalogScreen();
-            return const HomeScreen();
+            return const CatalogScreen();
             //return const LoginScreen();
         } else {
             // Otherwise → show LoginScreen

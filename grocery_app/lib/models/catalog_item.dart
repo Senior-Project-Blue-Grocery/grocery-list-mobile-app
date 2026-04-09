@@ -19,15 +19,15 @@ class CatalogItem {
 
   // Convert firestore to dart catalog item
   factory CatalogItem.fromSnapshot(DocumentSnapshot doc) {
-  final data = doc.data() as Map<String, dynamic>;
-  return CatalogItem.fromFirestore(doc.id, data);
+    final data = doc.data() as Map<String, dynamic>;
+    return CatalogItem.fromFirestore(doc.id, data);
   }
 
   factory CatalogItem.fromFirestore(String id, Map<String, dynamic> data) {
     return CatalogItem(
       id: id,
       name: data['name'] ?? '',
-      price: data['price'] ?? '',
+      price: (data['price'] ?? 0).toDouble(),
       category: data['category'] ?? '',
       keywords: List<String>.from(data['keywords'] ?? []),
       imageUrl: data['imageUrl'] ?? ''
