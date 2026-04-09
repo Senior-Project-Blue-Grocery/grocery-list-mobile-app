@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:grocery_app/models/user_model.dart';
+import 'package:grocery_app/services/firestore_service.dart';
 import 'home_screen.dart';
 
 
@@ -12,7 +14,12 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final nameController = TextEditingController();
+
+  FirestoreService firestoreService = FirestoreService();
+  
+  
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -20,51 +27,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isLoading = false;
 
   String? errorMessage;
-
-  Future<void> register() async {
-    final name = nameController.text.trim();
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-    final confirmPassword = confirmPasswordController.text.trim();
-
-    if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      setState(() => errorMessage = "Please fill in all fields");
-      return;
-    }
-
-    if (password != confirmPassword) {
-      setState(() => errorMessage = "Passwords do not match");
-      return;
-    }
-
-    try {
-      setState(() {
-        isLoading = true;
-        errorMessage = null;
-      });
-
-      // Create Firebase Auth user
-      final userAuth = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, 
-      password: password);
-
-      final uid = userAuth.user!.uid;
-
-      // Save profile info to Firebase
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'name': name,
-        'email': email,
-        'createdAt': Timestamp.now()
-      });
-
-    } on FirebaseAuthException catch (e) {
-      setState(() => errorMessage = e.message);
-    } finally {
-      if (mounted) {
-        setState(() => isLoading = false);
-      }
-    }
-  }
-
+  
+  //final uid = FirebaseAuth.instance.currentUser?.uid;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -81,9 +46,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 // Name
                 TextField(
-                  controller: nameController,
+                  controller: firstNameController,
                   decoration: const InputDecoration(
-                    labelText: "Full Name",
+                    labelText: "First Name",
+                    border: OutlineInputBorder()
+                    ),
+                ),
+                const SizedBox(height: 16),
+
+                TextField(
+                  controller: lastNameController,
+                  decoration: const InputDecoration(
+                    labelText: "Last Name",
                     border: OutlineInputBorder()
                     ),
                 ),
@@ -132,10 +106,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),  
                   ),
            
+                  
 
                 // Sign up Button
                 ElevatedButton(
-                  onPressed: isLoading ? null : register, 
+                  onPressed: () async {
+                    await firestoreService.registerUser(emailController.text, passwordController.text, UserModel(
+                      id: '', 
+                      first_name: firstNameController.text, 
+                      last_name: lastNameController.text, 
+                      email: emailController.text, 
+                      createdAt: Timestamp.now()
+                      )
+                    );
+                  },
                   child: isLoading
                     ? const SizedBox(
                       height: 20,
@@ -157,4 +141,5 @@ class _RegisterScreenState extends State<RegisterScreen> {
       )
     );
   }
-}
+
+  }

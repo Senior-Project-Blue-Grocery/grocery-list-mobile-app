@@ -5,12 +5,16 @@ class CatalogItem {
   final String name;
   final String category;
   final List<String> keywords;
+  final String imageUrl;
+  final double price;
 
   CatalogItem({
     required this.id, 
     required this.category, 
     required this.keywords, 
     required this.name, 
+    required this.imageUrl,
+    required this.price
   });
 
   // Convert firestore to dart catalog item
@@ -23,8 +27,10 @@ class CatalogItem {
     return CatalogItem(
       id: id,
       name: data['name'] ?? '',
+      price: data['price'] ?? '',
       category: data['category'] ?? '',
       keywords: List<String>.from(data['keywords'] ?? []),
+      imageUrl: data['imageUrl'] ?? ''
       );
   }
 
@@ -32,8 +38,10 @@ class CatalogItem {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
+      'price': price,
       'category': category,
-      'keywords': keywords
+      'keywords': keywords,
+      'imageUrl': imageUrl
     };
   }
 }

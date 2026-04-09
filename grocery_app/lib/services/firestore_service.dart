@@ -1,10 +1,48 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grocery_app/models/catalog_item.dart';
 import 'package:grocery_app/models/grocery_item.dart';
 import 'package:grocery_app/models/grocery_list.dart';
+import 'package:grocery_app/models/user_model.dart';
 
 class FirestoreService {
+  
   final FirebaseFirestore databaseConnection = FirebaseFirestore.instance;
+
+  //
+  // LOGIN & LOGOUT
+  //
+
+  // FirebaseAuth instance
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> signIn(String email, String password) async {
+    
+    await _auth.signInWithEmailAndPassword(email: email, password: password);
+    
+  }
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
+
+  //
+  // USERS
+  //
+
+  // register user account and add them to the database
+  Future<void> registerUser(String email, String password, UserModel user) async {
+    // Create Firebase Auth user
+    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email, 
+        password: password
+    );
+
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
+    await databaseConnection.collection('users').doc(uid).set(user.toMap());
+    
+  }
+
 
   //
   // GROCERY LISTS FUNCTIONS
@@ -89,14 +127,24 @@ class FirestoreService {
       .collection('groceryLists')
       .doc(listId)
       .collection('items')
+      .orderBy('createdAt')
       .snapshots()
+      .map((snapshot) {
+        return snapshot.docs.map((doc) {
+          return GroceryItem.fromFirestore(doc);
+        }).toList();
+      });
+
+      /*
       .map((snapshot) => snapshot.docs
         .map((doc) => GroceryItem.fromFirestore(doc))
         .toList());
+      */
   }
 
   // mark item completed or not
   Future<void> toggleItem(String listId, String itemId, bool value) async {
+    // need to check if completed value is true or false
     await databaseConnection
       .collection('groceryLists')
       .doc(listId)

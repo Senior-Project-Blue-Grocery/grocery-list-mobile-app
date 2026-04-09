@@ -7,12 +7,14 @@ class GroceryList {
   final String ownerId;
   final List<String> sharedWith;
   final int itemCount;
+  final Timestamp createdAt;
 
   GroceryList({
     required this.id,
     required this.name, required this.ownerId,
     required this.sharedWith,
-    required this.itemCount
+    required this.itemCount,
+    required this.createdAt
   });
 
   // converts firestore list data to dart object
@@ -24,7 +26,8 @@ class GroceryList {
       name: data['name'] ?? '',
       ownerId: data['ownerId'] ?? '',
       sharedWith: List<String>.from(data['sharedWith'] ?? []),
-      itemCount: data['itemCount'] ?? 0
+      itemCount: data['itemCount'] ?? 0,
+      createdAt: data['createdAt'] ?? ''
       );
   }
 
@@ -34,7 +37,8 @@ class GroceryList {
       'name': name,
       'ownerId': ownerId,
       'sharedWith': sharedWith,
-      'itemCount': itemCount
+      'itemCount': itemCount,
+      'createdAt': createdAt
     };
   }
 }

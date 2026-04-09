@@ -37,4 +37,6 @@ class GroceryItem {
     };
   }
 
+  bool? operator [](String other) {}
+
 }

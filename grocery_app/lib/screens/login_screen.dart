@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:grocery_app/auth/auth_gate.dart';
 import 'package:grocery_app/screens/register_screen.dart';
+import 'package:grocery_app/services/firestore_service.dart';
 import 'home_screen.dart';
 
 
@@ -11,31 +13,15 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-// Firebase instance
-final FirebaseAuth _auth = FirebaseAuth.instance;
-
-
 class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   String errorMessage = '';
 
-  Future<void> signIn() async {
-    try {
-      await _auth.signInWithEmailAndPassword(
-        email: emailController.text.trim(), 
-        password: passwordController.text.trim()
-        );
+FirestoreService firestoreService = FirestoreService();
 
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message ?? 'Login failed';
-      });
-    }
-    
-  }
-
+final AuthGate _auth = AuthGate();
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
               TextField(
                 controller: emailController, decoration: const InputDecoration(labelText: "Email")),
               const SizedBox(height: 16),
+              
               TextField(
                 controller: passwordController, 
                 obscureText: true, 
@@ -70,7 +57,15 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 12),
 
               ElevatedButton(
-                onPressed: signIn, 
+                onPressed: () async {
+                  try {
+                    await firestoreService.signIn(emailController.text, passwordController.text);
+                  } on FirebaseAuthException catch (e) {
+                    setState(() {
+                      errorMessage = e.message ?? 'Login failed';
+                    });
+                  }
+                },
                 child: const Text("Login")
                 ),
 
