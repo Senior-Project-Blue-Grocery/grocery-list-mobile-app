@@ -6,7 +6,6 @@ import 'package:grocery_app/screens/CatalogScreen.dart';
 import 'package:grocery_app/screens/add_items_screen.dart';
 import 'package:grocery_app/screens/account_screen.dart';
 import 'package:grocery_app/screens/cart_screen.dart';
-import 'package:grocery_app/screens/catalogscreen.dart';
 import 'package:grocery_app/services/firestore_service.dart';
 import 'package:grocery_app/services/populate_catalog.dart';
 

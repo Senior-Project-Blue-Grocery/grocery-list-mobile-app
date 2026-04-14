@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:grocery_app/models/catalog_item.dart';
+import 'package:grocery_app/services/firestore_service.dart';
 
 class PopulateCatalog {
   final FirebaseFirestore databaseConnection = FirebaseFirestore.instance;
