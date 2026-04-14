@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grocery_app/models/grocery_list.dart';
+import 'package:grocery_app/screens/account_linking_screen.dart';
 import 'package:grocery_app/screens/add_items_screen.dart';
 import 'package:grocery_app/screens/account_screen.dart';
 import 'package:grocery_app/screens/cart_screen.dart';
@@ -18,7 +18,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController listController = TextEditingController();
   final user = FirebaseAuth.instance.currentUser;
-
   final FirestoreService firestoreService = FirestoreService();
 
   int _navIndex = 0;
@@ -26,12 +25,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ❌ NO back button anymore
       appBar: AppBar(
-        automaticallyImplyLeading: false, // 🔥 removes back arrow
+        automaticallyImplyLeading: false,
         title: const Text('Grocery Lists'),
       ),
-
       body: Column(
         children: [
           Padding(
@@ -50,22 +47,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () async {
+                    if (listController.text.trim().isEmpty) return;
+
                     await firestoreService.createList(
                       GroceryList(
                         id: '',
-                        name: listController.text,
+                        name: listController.text.trim(),
                         ownerId: user!.uid,
                         sharedWith: [],
                         itemCount: 0,
                       ),
                     );
+
+                    listController.clear();
                   },
                   child: const Text('Add'),
                 ),
               ],
             ),
           ),
-
           Expanded(
             child: StreamBuilder<List<GroceryList>>(
               stream: firestoreService.getUserLists(user!.uid),
@@ -74,15 +74,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                    child: Text('No grocery lists yet'),
-                  );
-                }
-
                 if (snapshot.hasError) {
                   return Center(
                     child: Text('Error: ${snapshot.error}'),
+                  );
+                }
+
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(
+                    child: Text('No grocery lists yet'),
                   );
                 }
 
@@ -92,10 +92,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: lists.length,
                   itemBuilder: (context, index) {
                     final list = lists[index];
+                    final isShared = list.ownerId != user!.uid;
 
                     return ListTile(
+                      leading: Icon(
+                        isShared ? Icons.people_alt_outlined : Icons.list_alt,
+                        color: isShared ? Colors.blue : null,
+                      ),
                       title: Text(list.name),
-                      subtitle: Text('${list.itemCount} items'),
+                      subtitle: Text(
+                        isShared
+                            ? '${list.itemCount} items • Shared list'
+                            : '${list.itemCount} items',
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -106,12 +115,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       },
-                      trailing: IconButton(
-                        onPressed: () async {
-                          await firestoreService.deleteList(list.id);
-                        },
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                      ),
+                      trailing: list.ownerId == user!.uid
+                          ? IconButton(
+                              onPressed: () async {
+                                await firestoreService.deleteList(list.id);
+                              },
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                            )
+                          : null,
                     );
                   },
                 );
@@ -120,8 +131,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-
-      // 🔥 BOTTOM NAV ADDED
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF2E7DFF),
         selectedIconTheme: const IconThemeData(
@@ -136,7 +145,6 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: _navIndex,
         onTap: (i) {
           if (i == 1) {
-            // 🔥 SEARCH → CATALOG
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const CatalogScreen()),
@@ -145,6 +153,13 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => CartScreen()),
+            );
+          } else if (i == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const AccountLinkingScreen(),
+              ),
             );
           } else if (i == 4) {
             Navigator.push(
@@ -166,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: "",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_none),
+            icon: Icon(Icons.people_alt_outlined),
             label: "",
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: ""),

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/models/grocery_item.dart';
 import 'package:grocery_app/models/grocery_list.dart';
+import 'package:grocery_app/screens/account_linking_screen.dart';
 import 'package:grocery_app/screens/account_screen.dart';
 import 'package:grocery_app/screens/cart_screen.dart';
 import 'package:grocery_app/screens/home_screen.dart';
@@ -82,7 +83,6 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
             ),
           ),
 
-          // 🔥 ADD ITEMS BUTTON
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
             child: SizedBox(
@@ -117,7 +117,6 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
         ],
       ),
 
-      // 🔥 BOTTOM NAV
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF2E7DFF),
         selectedIconTheme: const IconThemeData(
@@ -136,27 +135,29 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
               context,
               MaterialPageRoute(builder: (_) => const HomeScreen()),
             );
-          } 
-          else if (i == 1) {
-            // 🔥 SEARCH → CATALOG
+          } else if (i == 1) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const CatalogScreen()),
             );
-          }
-          else if (i == 2) {
+          } else if (i == 2) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => CartScreen()),
             );
-          } 
-          else if (i == 4) {
+          } else if (i == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const AccountLinkingScreen(),
+              ),
+            );
+          } else if (i == 4) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const AccountScreen()),
             );
-          } 
-          else {
+          } else {
             setState(() {
               _navIndex = i;
             });
@@ -171,7 +172,7 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
             label: "",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_none),
+            icon: Icon(Icons.people_alt_outlined), // 👥 updated
             label: "",
           ),
           BottomNavigationBarItem(
