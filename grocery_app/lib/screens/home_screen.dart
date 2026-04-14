@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grocery_app/models/grocery_list.dart';
 import 'package:grocery_app/screens/CatalogScreen.dart';
-import 'package:grocery_app/screens/add_items_screen.dart';
+import 'package:grocery_app/screens/show_items_screen.dart';
 import 'package:grocery_app/screens/account_screen.dart';
 import 'package:grocery_app/screens/cart_screen.dart';
 import 'package:grocery_app/services/firestore_service.dart';
@@ -26,14 +26,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final FirestoreService firestoreService = FirestoreService();
 
 
-// used once to initially populate the global catalog in the database 
-
+// used to populate the global catalog in the database; runs when app restarts
+/*
 @override
 void initState() {
   super.initState();
   PopulateCatalog().seedCatalog();
 }
-
+*/
 
 
   int _navIndex = 0;
@@ -82,20 +82,23 @@ void initState() {
             ),
           ),
 
+          
           Expanded(
             child: StreamBuilder<List<GroceryList>>(
+              // pulls lists from firestore database
               stream: firestoreService.getUserLists(user!.uid),
               builder: (context, snapshot) {
+                // loading
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-
+                // no lists created
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(
                     child: Text('No grocery lists yet'),
                   );
                 }
-
+                // error
                 if (snapshot.hasError) {
                   return Center(
                     child: Text('Error: ${snapshot.error}'),

@@ -699,31 +699,523 @@ class PopulateCatalog {
           imageUrl: 'https://firebasestorage.googleapis.com/v0/b/grocerylistapp-cd542.firebasestorage.app/o/catalog_images%2Fcottage%20cheese.jpeg?alt=media&token=dcdfba9b-9c97-498a-b899-039a316bb896'
         ),
 
-        /*
-        CatalogItem(
-          id: '', 
-          name: 'crab legs',
-          price: 4.47,
-          category: 'poultry', 
-          keywords: FirestoreService().generateKeywords('crab legs'),  
-          imageUrl: 'imageUrl'
-        ),
         
         CatalogItem(
           id: '', 
-          name: 'chicken breasts',
-          price: 4.47,
-          category: 'poultry', 
-          keywords: FirestoreService().generateKeywords('chicken breasts'),  
-          imageUrl: 'imageUrl'
+          name: 'crab legs',
+          price: 16.29,
+          category: 'meat & seafood', 
+          keywords: FirestoreService().generateKeywords('crab legs'),  
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/grocerylistapp-cd542.firebasestorage.app/o/catalog_images%2Fcrab.jpeg?alt=media&token=347a8f7c-130b-4d54-befc-2f0205487a08'
         ),
         
         CatalogItem(
           id: '', 
           name: 'crackers',
-          price: 4.47,
-          category: 'poultry', 
+          price: 4.31,
+          category: 'snacks', 
           keywords: FirestoreService().generateKeywords('crackers'),  
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/grocerylistapp-cd542.firebasestorage.app/o/catalog_images%2Fcrackers.jpeg?alt=media&token=f697d994-f057-4a59-8418-b98e917c3964'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'cranberries',
+          price: 3.87,
+          category: 'produce', 
+          keywords: FirestoreService().generateKeywords('cranberries'),  
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/grocerylistapp-cd542.firebasestorage.app/o/catalog_images%2Fcranberries.jpeg?alt=media&token=33e8b0c6-0e23-4a9e-9c80-c0ffba395530'
+        ),
+        
+        CatalogItem(
+          id: '', 
+          name: 'croissants',
+          price: 7.53,
+          category: 'bakery', 
+          keywords: FirestoreService().generateKeywords('croissants'),  
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/grocerylistapp-cd542.firebasestorage.app/o/catalog_images%2Fcroissants.jpeg?alt=media&token=1099d072-f69d-4fcb-ac5e-e114e30a5c38'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'cupcakes',
+          price: 6.63,
+          category: 'bakery', 
+          keywords: FirestoreService().generateKeywords('cupcakes'),  
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/grocerylistapp-cd542.firebasestorage.app/o/catalog_images%2Fcupcakes.jpeg?alt=media&token=f2ffe68e-181e-47dd-8957-1878d7c0ee65'
+        ),
+        
+        CatalogItem(
+          id: '', 
+          name: 'dinner rolls',
+          price: 5.75,
+          category: 'bakery', 
+          keywords: FirestoreService().generateKeywords('dinner rolls'),  
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/grocerylistapp-cd542.firebasestorage.app/o/catalog_images%2Fdinner%20rolls.jpeg?alt=media&token=73a198d5-390c-436d-ab34-b4b9fe30755f'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'donuts',
+          price: 5.19,
+          category: 'bakery', 
+          keywords: FirestoreService().generateKeywords('donuts'),  
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/grocerylistapp-cd542.firebasestorage.app/o/catalog_images%2Fdonuts.jpeg?alt=media&token=089b93b0-72c9-4d1a-98c5-c70912c2b811'
+        ),
+        
+        CatalogItem(
+          id: '', 
+          name: 'eggplants',
+          price: 3.87,
+          category: 'produce', 
+          keywords: FirestoreService().generateKeywords('eggplants'),  
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/grocerylistapp-cd542.firebasestorage.app/o/catalog_images%2Feggplants.jpeg?alt=media&token=6b93b89e-33d1-4a9a-bc89-03c459b4fb5c'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'energy drinks',
+          price: 3.33,
+          category: 'drinks', 
+          keywords: FirestoreService().generateKeywords('energy drinks'),  
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/grocerylistapp-cd542.firebasestorage.app/o/catalog_images%2Fenergy%20drinks.jpeg?alt=media&token=72c188d4-527b-4be4-877a-69946a82d7e8'
+        ),
+        
+        CatalogItem(
+          id: '', 
+          name: 'english muffins',
+          price: 5.19,
+          category: 'bakery', 
+          keywords: FirestoreService().generateKeywords('english muffins'),  
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/grocerylistapp-cd542.firebasestorage.app/o/catalog_images%2Fenglish%20muffins.jpeg?alt=media&token=7b652a10-1649-4d5b-b29e-704d33576788'
+        ),
+
+        //
+        //
+        // ------ CORRECT PRICES STOP HERE ------
+        //
+        //
+
+        CatalogItem(
+          id: '', 
+          name: 'fish sticks',
+          price: 4.47,
+          category: 'frozen', 
+          keywords: FirestoreService().generateKeywords('fish sticks'),  
+          imageUrl: 'imageUrl'
+        ),
+        
+        CatalogItem(
+          id: '', 
+          name: 'flour',
+          price: 4.47,
+          category: 'pantry', 
+          keywords: FirestoreService().generateKeywords('flour'),  
+          imageUrl: 'imageUrl'
+        ),
+        
+        CatalogItem(
+          id: '', 
+          name: 'french fries',
+          price: 4.47,
+          category: 'frozen', 
+          keywords: FirestoreService().generateKeywords('french fries'),  
+          imageUrl: 'imageUrl'
+        ),
+        
+        CatalogItem(
+          id: '', 
+          name: 'frozen berries',
+          price: 4.47,
+          category: 'frozen', 
+          keywords: FirestoreService().generateKeywords('frozen berries'),  
+          imageUrl: 'imageUrl'
+        ),
+        
+        CatalogItem(
+          id: '', 
+          name: 'frozen broccoli',
+          price: 4.47,
+          category: 'frozen', 
+          keywords: FirestoreService().generateKeywords('frozen broccoli'),  
+          imageUrl: 'imageUrl'
+        ),
+        
+        CatalogItem(
+          id: '', 
+          name: 'frozen corn',
+          price: 4.47,
+          category: 'frozen', 
+          keywords: FirestoreService().generateKeywords('frozen corn'),  
+          imageUrl: 'imageUrl'
+        ),
+        
+        CatalogItem(
+          id: '', 
+          name: 'frozen peas',
+          price: 4.47,
+          category: 'frozen', 
+          keywords: FirestoreService().generateKeywords('frozen peas'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'frozen pizza',
+          price: 4.47,
+          category: 'frozen', 
+          keywords: FirestoreService().generateKeywords('frozen pizza'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'frozen yogurt',
+          price: 4.47,
+          category: 'frozen', 
+          keywords: FirestoreService().generateKeywords('frozen yogurt'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'garlic powder',
+          price: 4.47,
+          category: 'spices', 
+          keywords: FirestoreService().generateKeywords('garlic powder'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'granola',
+          price: 4.47,
+          category: 'pantry', 
+          keywords: FirestoreService().generateKeywords('granola'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'granola bars',
+          price: 4.47,
+          category: 'snacks', 
+          keywords: FirestoreService().generateKeywords('granola bars'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'greek yogurt',
+          price: 4.47,
+          category: 'dairy', 
+          keywords: FirestoreService().generateKeywords('greek yogurt'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'ground beef',
+          price: 4.47,
+          category: 'meat & seafood', 
+          keywords: FirestoreService().generateKeywords('ground beef'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'ground chicken',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('ground chicken'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'ground turkey',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('ground turkey'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'gum',
+          price: 4.47,
+          category: 'snacks', 
+          keywords: FirestoreService().generateKeywords('gum'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'half and half',
+          price: 4.47,
+          category: 'dairy', 
+          keywords: FirestoreService().generateKeywords('half and half'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'ham',
+          price: 4.47,
+          category: 'meat & seafood', 
+          keywords: FirestoreService().generateKeywords('ham'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'hamburger buns',
+          price: 4.47,
+          category: 'bakery', 
+          keywords: FirestoreService().generateKeywords('hamburger buns'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'heavy cream',
+          price: 4.47,
+          category: 'dairy', 
+          keywords: FirestoreService().generateKeywords('heavy cream'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'honey',
+          price: 4.47,
+          category: 'pantry', 
+          keywords: FirestoreService().generateKeywords('honey'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'hot chocolate',
+          price: 4.47,
+          category: 'pantry', 
+          keywords: FirestoreService().generateKeywords('hot chocolate'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'hot dog buns',
+          price: 4.47,
+          category: 'bakery', 
+          keywords: FirestoreService().generateKeywords('hot dog buns'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'hot sauce',
+          price: 4.47,
+          category: 'condiments', 
+          keywords: FirestoreService().generateKeywords('hot sauce'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'italian seasoning',
+          price: 4.47,
+          category: 'spices', 
+          keywords: FirestoreService().generateKeywords('italian seasoning'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'jasmine rice',
+          price: 4.47,
+          category: 'pantry', 
+          keywords: FirestoreService().generateKeywords('jasmine rice'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'juice',
+          price: 4.47,
+          category: 'drinks', 
+          keywords: FirestoreService().generateKeywords('juice'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'kale',
+          price: 4.47,
+          category: 'produce', 
+          keywords: FirestoreService().generateKeywords('kale'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'ketchup',
+          price: 4.47,
+          category: 'condiments', 
+          keywords: FirestoreService().generateKeywords('ketchup'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'limes',
+          price: 4.47,
+          category: 'produce', 
+          keywords: FirestoreService().generateKeywords('limes'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'lobster',
+          price: 4.47,
+          category: 'meat & seafood', 
+          keywords: FirestoreService().generateKeywords('lobster'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'macaroni',
+          price: 4.47,
+          category: 'pantry', 
+          keywords: FirestoreService().generateKeywords('macaroni'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'maple syrup',
+          price: 4.47,
+          category: 'pantry', 
+          keywords: FirestoreService().generateKeywords('maple syrup'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'mayonnaise',
+          price: 4.47,
+          category: 'condiments', 
+          keywords: FirestoreService().generateKeywords('mayonnaise'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'muffins',
+          price: 4.47,
+          category: 'bakery', 
+          keywords: FirestoreService().generateKeywords('muffins'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'mustard',
+          price: 4.47,
+          category: 'condiments', 
+          keywords: FirestoreService().generateKeywords('mustard'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'nutmeg',
+          price: 4.47,
+          category: 'spices', 
+          keywords: FirestoreService().generateKeywords('nutmeg'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'oatmeal',
+          price: 4.47,
+          category: 'pantry', 
+          keywords: FirestoreService().generateKeywords('oatmeal'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'olive oil',
+          price: 4.47,
+          category: 'condiments', 
+          keywords: FirestoreService().generateKeywords('olive oil'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'onions powder',
+          price: 4.47,
+          category: 'spices', 
+          keywords: FirestoreService().generateKeywords('onion powder'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'orange juice',
+          price: 4.47,
+          category: 'drinks', 
+          keywords: FirestoreService().generateKeywords('orange juice'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'pancakes',
+          price: 4.47,
+          category: 'frozen', 
+          keywords: FirestoreService().generateKeywords('pancakes'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'paprika',
+          price: 4.47,
+          category: 'spices', 
+          keywords: FirestoreService().generateKeywords('paprika'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'pasta',
+          price: 4.47,
+          category: 'pantry', 
+          keywords: FirestoreService().generateKeywords('pasta'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'peanut butter',
+          price: 4.47,
+          category: 'pantry', 
+          keywords: FirestoreService().generateKeywords('peanut butter'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'pepper',
+          price: 4.47,
+          category: 'spices', 
+          keywords: FirestoreService().generateKeywords('pepper'),  
           imageUrl: 'imageUrl'
         ),
 
@@ -735,7 +1227,7 @@ class PopulateCatalog {
           keywords: FirestoreService().generateKeywords('chicken breasts'),  
           imageUrl: 'imageUrl'
         ),
-        
+
         CatalogItem(
           id: '', 
           name: 'chicken breasts',
@@ -753,7 +1245,7 @@ class PopulateCatalog {
           keywords: FirestoreService().generateKeywords('chicken breasts'),  
           imageUrl: 'imageUrl'
         ),
-        
+
         CatalogItem(
           id: '', 
           name: 'chicken breasts',
@@ -762,7 +1254,181 @@ class PopulateCatalog {
           keywords: FirestoreService().generateKeywords('chicken breasts'),  
           imageUrl: 'imageUrl'
         ),
-        */
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+        CatalogItem(
+          id: '', 
+          name: 'chicken breasts',
+          price: 4.47,
+          category: 'poultry', 
+          keywords: FirestoreService().generateKeywords('chicken breasts'),  
+          imageUrl: 'imageUrl'
+        ),
+
+
+
+
         
         
 

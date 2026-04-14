@@ -59,6 +59,7 @@ class FirestoreService {
       ownerId: list.ownerId,
       sharedWith: [],
       itemCount: list.itemCount,
+      createdAt: Timestamp.now()
     );
 
     await docRef.set(newList.toMap());
@@ -79,7 +80,7 @@ class FirestoreService {
     await databaseConnection.collection('groceryLists').doc(listId).delete();
   }
 
-  /*
+  
   //
   // SHARING FUNCTIONS
   //
@@ -107,7 +108,6 @@ class FirestoreService {
 
     return ownerId == userId || shared.contains(userId);
   }
-  */
 
   //
   // ITEMS IN A LIST FUNCTIONS

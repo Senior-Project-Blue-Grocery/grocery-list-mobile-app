@@ -53,13 +53,7 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                }
-
-                // no data
+                // no items in list yet
                 if (!snapshot.hasData) {
                   return const Center(
                     child: Text('No grocery items yet')
@@ -75,6 +69,7 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
 
                 final items = snapshot.data!;
 
+                // UI for items
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: items.length,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:grocery_app/screens/CatalogScreen.dart';
 import 'package:grocery_app/screens/home_screen.dart';
 import 'package:grocery_app/screens/login_screen.dart';
-import 'package:grocery_app/screens/profile_screen.dart';
+import 'package:grocery_app/screens/welcome_screen.dart';
 
 // This widget listens to Firebase authentication state
 // and automatically routes the user to the correct screen.
