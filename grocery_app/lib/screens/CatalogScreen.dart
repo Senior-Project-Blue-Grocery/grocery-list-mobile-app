@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_app/models/catalog_item.dart';
+import 'package:grocery_app/screens/account_linking_screen.dart';
 import 'package:grocery_app/screens/account_screen.dart';
 import 'package:grocery_app/screens/aisle_results_screen.dart';
 import 'package:grocery_app/screens/aisle_screen.dart';
@@ -180,9 +181,9 @@ class _CatalogScreenState extends State<CatalogScreen> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
             children: [
               if (isSearching) ...[
-                Text(
+                const Text(
                   'Search Results',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
                   ),
@@ -324,6 +325,13 @@ class _CatalogScreenState extends State<CatalogScreen> {
               context,
               MaterialPageRoute(builder: (_) => CartScreen()),
             );
+          } else if (i == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const AccountLinkingScreen(),
+              ),
+            );
           } else if (i == 4) {
             Navigator.push(
               context,
@@ -340,9 +348,13 @@ class _CatalogScreenState extends State<CatalogScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: ""),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: ""),
           BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart_outlined), label: ""),
+            icon: Icon(Icons.shopping_cart_outlined),
+            label: "",
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.notifications_none), label: ""),
+            icon: Icon(Icons.people_alt_outlined),
+            label: "",
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: ""),
         ],
       ),

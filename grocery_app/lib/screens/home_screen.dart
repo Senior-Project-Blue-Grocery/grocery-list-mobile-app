@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grocery_app/models/grocery_list.dart';
+import 'package:grocery_app/screens/account_linking_screen.dart';
 import 'package:grocery_app/screens/CatalogScreen.dart';
 import 'package:grocery_app/screens/show_items_screen.dart';
 import 'package:grocery_app/screens/account_screen.dart';
@@ -19,7 +20,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController listController = TextEditingController();
   final user = FirebaseAuth.instance.currentUser;
-
 
   
 
@@ -41,12 +41,10 @@ void initState() {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ❌ NO back button anymore
       appBar: AppBar(
         automaticallyImplyLeading: false, // 🔥 removes back arrow
         title: const Text('My Grocery Lists'),
       ),
-
       body: Column(
         children: [
           // header
@@ -67,14 +65,19 @@ void initState() {
                 ElevatedButton(
                   // create a grocery list obj with 0 items, owner is user id of person currently logged in
                   onPressed: () async {           
-                    await firestoreService.createList(GroceryList(
+                    if (listController.text.trim().isEmpty) return;
+
+                    await firestoreService.createList(
+                      GroceryList(
                       id: '',
-                      name: listController.text, 
+                      name: listController.text.trim(), 
                       ownerId: user!.uid, 
                       sharedWith: [], 
                       itemCount: 0,
                       createdAt: Timestamp.now())
                       );
+
+                    listController.clear();
                   },
                   child: const Text('Add'),
                 ),
@@ -92,7 +95,7 @@ void initState() {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                // no lists created
+
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(
                     child: Text('No grocery lists yet'),
@@ -111,10 +114,19 @@ void initState() {
                   itemCount: lists.length,
                   itemBuilder: (context, index) {
                     final list = lists[index];
+                    final isShared = list.ownerId != user!.uid;
 
                     return ListTile(
+                      leading: Icon(
+                        isShared ? Icons.people_alt_outlined : Icons.list_alt,
+                        color: isShared ? Colors.blue : null,
+                      ),
                       title: Text(list.name),
-                      subtitle: Text('${list.itemCount} items'),
+                      subtitle: Text(
+                        isShared
+                            ? '${list.itemCount} items • Shared list'
+                            : '${list.itemCount} items',
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -125,12 +137,14 @@ void initState() {
                           ),
                         );
                       },
-                      trailing: IconButton(
-                        onPressed: () async {
-                          await firestoreService.deleteList(list.id);
-                        },
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                      ),
+                      trailing: list.ownerId == user!.uid
+                          ? IconButton(
+                              onPressed: () async {
+                                await firestoreService.deleteList(list.id);
+                              },
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                            )
+                          : null,
                     );
                   },
                 );
@@ -139,8 +153,6 @@ void initState() {
           ),
         ],
       ),
-
-      // 🔥 BOTTOM NAV ADDED
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF2E7DFF),
         selectedIconTheme: const IconThemeData(
@@ -155,7 +167,6 @@ void initState() {
         currentIndex: _navIndex,
         onTap: (i) {
           if (i == 1) {
-            // 🔥 SEARCH → CATALOG
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const CatalogScreen()),
@@ -164,6 +175,13 @@ void initState() {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => CartScreen()),
+            );
+          } else if (i == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const AccountLinkingScreen(),
+              ),
             );
           } else if (i == 4) {
             Navigator.push(
@@ -185,7 +203,7 @@ void initState() {
             label: "",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_none),
+            icon: Icon(Icons.people_alt_outlined),
             label: "",
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: ""),

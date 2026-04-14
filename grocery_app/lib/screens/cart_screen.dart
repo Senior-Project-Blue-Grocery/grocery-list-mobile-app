@@ -6,6 +6,7 @@ import 'package:grocery_app/services/firestore_service.dart';
 import 'package:grocery_app/screens/home_screen.dart';
 import 'package:grocery_app/screens/catalogscreen.dart';
 import 'package:grocery_app/screens/account_screen.dart';
+import 'package:grocery_app/screens/account_linking_screen.dart';
 
 class CartScreen extends StatelessWidget {
   CartScreen({super.key});
@@ -146,7 +147,6 @@ class CartScreen extends StatelessWidget {
         },
       ),
 
-      // 🔥 Bottom Nav Bar Added
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF2E7DFF),
         selectedIconTheme: const IconThemeData(
@@ -170,6 +170,13 @@ class CartScreen extends StatelessWidget {
               context,
               MaterialPageRoute(builder: (_) => const CatalogScreen()),
             );
+          } else if (i == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const AccountLinkingScreen(),
+              ),
+            );
           } else if (i == 4) {
             Navigator.push(
               context,
@@ -186,7 +193,7 @@ class CartScreen extends StatelessWidget {
             label: "",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_none),
+            icon: Icon(Icons.people_alt_outlined), // 👥 updated
             label: "",
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: ""),
