@@ -45,6 +45,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         name: widget.item.name,
         category: widget.item.category,
         quantity: quantity,
+        imageUrl: widget.item.imageUrl,
+        price: widget.item.price, // ✅ ADDED
       ),
     );
 

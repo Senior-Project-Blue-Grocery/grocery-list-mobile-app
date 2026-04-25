@@ -18,51 +18,66 @@ class CartScreen extends StatelessWidget {
     BuildContext context,
     List<GroceryList> lists,
   ) async {
-    String? selectedListId;
+    final Set<String> selectedListIds = {};
 
     await showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Add Cart to a List'),
-          content: DropdownButtonFormField<String>(
-            decoration: const InputDecoration(
-              labelText: 'Choose a list',
-            ),
-            items: lists.map((list) {
-              return DropdownMenuItem<String>(
-                value: list.id,
-                child: Text(list.name),
-              );
-            }).toList(),
-            onChanged: (value) {
-              selectedListId = value;
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (selectedListId != null && user != null) {
-                  await firestoreService.addCartToList(
-                    user!.uid,
-                    selectedListId!,
-                  );
-                }
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Add Cart to Lists'),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: lists.map((list) {
+                    return CheckboxListTile(
+                      title: Text(list.name),
+                      value: selectedListIds.contains(list.id),
+                      onChanged: (checked) {
+                        setState(() {
+                          if (checked == true) {
+                            selectedListIds.add(list.id);
+                          } else {
+                            selectedListIds.remove(list.id);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: selectedListIds.isEmpty
+                      ? null
+                      : () async {
+                          if (user != null) {
+                            await firestoreService.addCartToMultipleLists(
+                              user!.uid,
+                              selectedListIds.toList(),
+                            );
+                          }
 
-                if (context.mounted) {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Cart added to list')),
-                  );
-                }
-              },
-              child: const Text('Add to List'),
-            ),
-          ],
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Cart added to selected lists'),
+                              ),
+                            );
+                          }
+                        },
+                  child: const Text('Add'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -97,6 +112,11 @@ class CartScreen extends StatelessWidget {
 
           final cartItems = cartSnapshot.data!;
 
+          final totalPrice = cartItems.fold<double>(
+            0,
+            (sum, item) => sum + (item.price * item.quantity),
+          );
+
           return Column(
             children: [
               Expanded(
@@ -106,9 +126,28 @@ class CartScreen extends StatelessWidget {
                     final item = cartItems[index];
 
                     return ListTile(
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: item.imageUrl.isNotEmpty
+                            ? Image.network(
+                                item.imageUrl,
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(
+                                width: 48,
+                                height: 48,
+                                color: Colors.grey.shade200,
+                                child: const Icon(
+                                  Icons.image_not_supported_outlined,
+                                ),
+                              ),
+                      ),
                       title: Text(item.name),
-                      subtitle:
-                          Text('${item.category} • Qty: ${item.quantity}'),
+                      subtitle: Text(
+                        '${item.category} • Qty: ${item.quantity} • \$${item.price.toStringAsFixed(2)}',
+                      ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () async {
@@ -122,6 +161,30 @@ class CartScreen extends StatelessWidget {
                   },
                 ),
               ),
+
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Total',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '\$${totalPrice.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
               StreamBuilder<List<GroceryList>>(
                 stream: firestoreService.getUserLists(user!.uid),
                 builder: (context, listSnapshot) {
@@ -146,7 +209,6 @@ class CartScreen extends StatelessWidget {
           );
         },
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF2E7DFF),
         selectedIconTheme: const IconThemeData(
@@ -193,7 +255,7 @@ class CartScreen extends StatelessWidget {
             label: "",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people_alt_outlined), // 👥 updated
+            icon: Icon(Icons.people_alt_outlined),
             label: "",
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: ""),

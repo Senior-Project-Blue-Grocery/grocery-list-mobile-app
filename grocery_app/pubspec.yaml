@@ -17,7 +17,6 @@ dependencies:
   cloud_firestore: ^6.1.2
   firebase_storage: ^13.2.0
   rxdart: ^0.28.0
- 
 
 dev_dependencies:
   flutter_test:
@@ -26,3 +25,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/listyn.png

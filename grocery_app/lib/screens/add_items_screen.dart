@@ -34,87 +34,129 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
       appBar: AppBar(
         title: Text(groceryList.name),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: StreamBuilder<List<GroceryItem>>(
-              stream: firestoreService.getItems(groceryList.id),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+      body: StreamBuilder<List<GroceryItem>>(
+        stream: firestoreService.getItems(groceryList.id),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                }
+          final items = snapshot.data ?? [];
 
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                    child: Text('No grocery items yet'),
-                  );
-                }
+          final totalPrice = items.fold<double>(
+            0,
+            (sum, item) => sum + (item.price * item.quantity),
+          );
 
-                final items = snapshot.data!;
+          return Column(
+            children: [
+              Expanded(
+                child: items.isEmpty
+                    ? const Center(
+                        child: Text('No grocery items yet'),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          final item = items[index];
 
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-
-                    return ListTile(
-                      title: Text(item.name),
-                      subtitle: Text('Qty: ${item.quantity}'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () async {
-                          await firestoreService.deleteItem(
-                            groceryList.id,
-                            item.id,
+                          return ListTile(
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: item.imageUrl.isNotEmpty
+                                  ? Image.network(
+                                      item.imageUrl,
+                                      width: 48,
+                                      height: 48,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Container(
+                                      width: 48,
+                                      height: 48,
+                                      color: Colors.grey.shade200,
+                                      child: const Icon(
+                                        Icons.image_not_supported_outlined,
+                                      ),
+                                    ),
+                            ),
+                            title: Text(item.name),
+                            subtitle: Text(
+                              'Qty: ${item.quantity}  •  \$${item.price.toStringAsFixed(2)}',
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () async {
+                                await firestoreService.deleteItem(
+                                  groceryList.id,
+                                  item.id,
+                                );
+                              },
+                            ),
                           );
                         },
                       ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
+              ),
 
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-            child: SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const CatalogScreen(),
+              // 🔥 TOTAL
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Total',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
+                    Text(
+                      '\$${totalPrice.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-                child: const Text(
-                  'Add Items',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
+              ),
+
+              // 🔥 ALWAYS VISIBLE BUTTON
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const CatalogScreen(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: const Text(
+                      'Add Items',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
 
       bottomNavigationBar: BottomNavigationBar(
@@ -143,7 +185,9 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
           } else if (i == 2) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => CartScreen()),
+              MaterialPageRoute(
+                builder: (_) => CartScreen(), // we'll enhance next
+              ),
             );
           } else if (i == 3) {
             Navigator.push(
@@ -172,7 +216,7 @@ class _AddItemsScreenState extends State<AddItemsScreen> {
             label: "",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people_alt_outlined), // 👥 updated
+            icon: Icon(Icons.people_alt_outlined),
             label: "",
           ),
           BottomNavigationBarItem(

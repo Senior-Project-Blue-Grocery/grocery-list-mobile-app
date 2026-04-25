@@ -32,6 +32,8 @@ class _AisleResultsScreenState extends State<AisleResultsScreen> {
         name: item.name,
         category: item.category,
         quantity: 1,
+        imageUrl: item.imageUrl,
+        price: item.price, // ✅ ADDED
       ),
     );
 

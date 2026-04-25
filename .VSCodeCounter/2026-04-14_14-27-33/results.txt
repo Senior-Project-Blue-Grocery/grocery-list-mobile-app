@@ -1,0 +1,164 @@
+Date : 2026-04-14 14:27:33
+Directory : /Users/jason/grocery-list-mobile-app/grocery_app
+Total : 79 files,  4905 codes, 368 comments, 696 blanks, all 5969 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| Dart       |         23 |      2,932 |        123 |        325 |      3,380 |
+| C++        |         16 |        566 |        136 |        191 |        893 |
+| XML        |         10 |        470 |         53 |         12 |        535 |
+| CMake      |          8 |        465 |          0 |         92 |        557 |
+| JSON       |          6 |        278 |          0 |          4 |        282 |
+| Swift      |          7 |         67 |          7 |         25 |         99 |
+| Ruby       |          2 |         63 |          4 |         20 |         87 |
+| YAML       |          2 |         24 |         22 |         11 |         57 |
+| HTML       |          1 |         19 |         23 |          5 |         47 |
+| Markdown   |          2 |         14 |          0 |          9 |         23 |
+| Properties |          2 |          7 |          0 |          2 |          9 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                           | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                              |         79 |      4,905 |        368 |        696 |      5,969 |
+| . (Files)                                                                                                      |          4 |         36 |         22 |         18 |         76 |
+| android                                                                                                        |         10 |        102 |         51 |         11 |        164 |
+| android (Files)                                                                                                |          1 |          2 |          0 |          1 |          3 |
+| android/app                                                                                                    |          8 |         95 |         51 |          9 |        155 |
+| android/app (Files)                                                                                            |          1 |         29 |          0 |          0 |         29 |
+| android/app/src                                                                                                |          7 |         66 |         51 |          9 |        126 |
+| android/app/src/debug                                                                                          |          1 |          3 |          4 |          1 |          8 |
+| android/app/src/main                                                                                           |          5 |         60 |         43 |          7 |        110 |
+| android/app/src/main (Files)                                                                                   |          1 |         34 |         11 |          1 |         46 |
+| android/app/src/main/res                                                                                       |          4 |         26 |         32 |          6 |         64 |
+| android/app/src/main/res/drawable                                                                              |          1 |          4 |          7 |          2 |         13 |
+| android/app/src/main/res/drawable-v21                                                                          |          1 |          4 |          7 |          2 |         13 |
+| android/app/src/main/res/values                                                                                |          1 |          9 |          9 |          1 |         19 |
+| android/app/src/main/res/values-night                                                                          |          1 |          9 |          9 |          1 |         19 |
+| android/app/src/profile                                                                                        |          1 |          3 |          4 |          1 |          8 |
+| android/gradle                                                                                                 |          1 |          5 |          0 |          1 |          6 |
+| android/gradle/wrapper                                                                                         |          1 |          5 |          0 |          1 |          6 |
+| ios                                                                                                            |         10 |        266 |          7 |         27 |        300 |
+| ios (Files)                                                                                                    |          1 |         31 |          3 |         10 |         44 |
+| ios/Runner                                                                                                     |          8 |        228 |          2 |         13 |        243 |
+| ios/Runner (Files)                                                                                             |          3 |         19 |          0 |          7 |         26 |
+| ios/Runner/Assets.xcassets                                                                                     |          3 |        148 |          0 |          4 |        152 |
+| ios/Runner/Assets.xcassets/AppIcon.appiconset                                                                  |          1 |        122 |          0 |          1 |        123 |
+| ios/Runner/Assets.xcassets/LaunchImage.imageset                                                                |          2 |         26 |          0 |          3 |         29 |
+| ios/Runner/Base.lproj                                                                                          |          2 |         61 |          2 |          2 |         65 |
+| ios/RunnerTests                                                                                                |          1 |          7 |          2 |          4 |         13 |
+| lib                                                                                                            |         22 |      2,918 |        113 |        318 |      3,349 |
+| lib (Files)                                                                                                    |          2 |         91 |         13 |         13 |        117 |
+| lib/auth                                                                                                       |          1 |         26 |          9 |          6 |         41 |
+| lib/models                                                                                                     |          5 |        175 |          6 |         30 |        211 |
+| lib/screens                                                                                                    |         12 |      2,038 |          9 |        182 |      2,229 |
+| lib/services                                                                                                   |          2 |        588 |         76 |         87 |        751 |
+| linux                                                                                                          |          9 |        339 |         42 |         94 |        475 |
+| linux (Files)                                                                                                  |          1 |        104 |          0 |         25 |        129 |
+| linux/flutter                                                                                                  |          4 |        105 |          9 |         27 |        141 |
+| linux/runner                                                                                                   |          4 |        130 |         33 |         42 |        205 |
+| macos                                                                                                          |          7 |        485 |          6 |         27 |        518 |
+| macos (Files)                                                                                                  |          1 |         32 |          1 |         10 |         43 |
+| macos/Flutter                                                                                                  |          1 |         12 |          3 |          4 |         19 |
+| macos/Runner                                                                                                   |          4 |        434 |          0 |          9 |        443 |
+| macos/Runner (Files)                                                                                           |          2 |         23 |          0 |          7 |         30 |
+| macos/Runner/Assets.xcassets                                                                                   |          1 |         68 |          0 |          1 |         69 |
+| macos/Runner/Assets.xcassets/AppIcon.appiconset                                                                |          1 |         68 |          0 |          1 |         69 |
+| macos/Runner/Base.lproj                                                                                        |          1 |        343 |          0 |          1 |        344 |
+| macos/RunnerTests                                                                                              |          1 |          7 |          2 |          4 |         13 |
+| test                                                                                                           |          1 |         14 |         10 |          7 |         31 |
+| web                                                                                                            |          2 |         54 |         23 |          6 |         83 |
+| windows                                                                                                        |         14 |        691 |         94 |        188 |        973 |
+| windows (Files)                                                                                                |          1 |         89 |          0 |         20 |        109 |
+| windows/flutter                                                                                                |          4 |        140 |          9 |         29 |        178 |
+| windows/runner                                                                                                 |          9 |        462 |         85 |        139 |        686 |
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                                       | language   | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| /Users/jason/grocery-list-mobile-app/grocery_app/README.md                                                     | Markdown   |         11 |          0 |          7 |         18 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/analysis_options.yaml                                         | YAML       |          3 |         22 |          4 |         29 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/android/app/google-services.json                              | JSON       |         29 |          0 |          0 |         29 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/android/app/src/debug/AndroidManifest.xml                     | XML        |          3 |          4 |          1 |          8 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/android/app/src/main/AndroidManifest.xml                      | XML        |         34 |         11 |          1 |         46 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/android/app/src/main/res/drawable-v21/launch_background.xml   | XML        |          4 |          7 |          2 |         13 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/android/app/src/main/res/drawable/launch_background.xml       | XML        |          4 |          7 |          2 |         13 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/android/app/src/main/res/values-night/styles.xml              | XML        |          9 |          9 |          1 |         19 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/android/app/src/main/res/values/styles.xml                    | XML        |          9 |          9 |          1 |         19 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/android/app/src/profile/AndroidManifest.xml                   | XML        |          3 |          4 |          1 |          8 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/android/gradle.properties                                     | Properties |          2 |          0 |          1 |          3 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/android/gradle/wrapper/gradle-wrapper.properties              | Properties |          5 |          0 |          1 |          6 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/firebase.json                                                 | JSON       |          1 |          0 |          0 |          1 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/ios/Podfile                                                   | Ruby       |         31 |          3 |         10 |         44 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/ios/Runner/AppDelegate.swift                                  | Swift      |         14 |          0 |          3 |         17 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json   | JSON       |        122 |          0 |          1 |        123 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json | JSON       |         23 |          0 |          1 |         24 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md     | Markdown   |          3 |          0 |          2 |          5 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/ios/Runner/Base.lproj/LaunchScreen.storyboard                 | XML        |         36 |          1 |          1 |         38 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/ios/Runner/Base.lproj/Main.storyboard                         | XML        |         25 |          1 |          1 |         27 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/ios/Runner/Runner-Bridging-Header.h                           | C++        |          1 |          0 |          1 |          2 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/ios/Runner/SceneDelegate.swift                                | Swift      |          4 |          0 |          3 |          7 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/ios/RunnerTests/RunnerTests.swift                             | Swift      |          7 |          2 |          4 |         13 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/auth/auth_gate.dart                                       | Dart       |         26 |          9 |          6 |         41 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/firebase_options.dart                                     | Dart       |         70 |         12 |          7 |         89 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/main.dart                                                 | Dart       |         21 |          1 |          6 |         28 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/models/cart_item.dart                                     | Dart       |         29 |          0 |          5 |         34 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/models/catalog_item.dart                                  | Dart       |         40 |          2 |          5 |         47 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/models/grocery_item.dart                                  | Dart       |         29 |          2 |          9 |         40 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/models/grocery_list.dart                                  | Dart       |         32 |          2 |          6 |         40 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/models/list_invite.dart                                   | Dart       |         45 |          0 |          5 |         50 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/screens/CatalogScreen.dart                                | Dart       |        478 |          0 |         36 |        514 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/screens/account_linking_screen.dart                       | Dart       |        254 |          0 |         22 |        276 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/screens/account_screen.dart                               | Dart       |         82 |          0 |          6 |         88 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/screens/add_items_screen.dart                             | Dart       |        173 |          0 |         13 |        186 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/screens/aisle_results_screen.dart                         | Dart       |        232 |          0 |         18 |        250 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/screens/aisle_screen.dart                                 | Dart       |         44 |          0 |          5 |         49 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/screens/cart_screen.dart                                  | Dart       |        191 |          0 |         13 |        204 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/screens/firebase_options.dart                             | Dart       |          0 |          1 |          0 |          1 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/screens/home_screen.dart                                  | Dart       |        180 |          0 |         12 |        192 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/screens/item_detail_screen.dart                           | Dart       |        201 |          0 |         12 |        213 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/screens/login_screen.dart                                 | Dart       |         75 |          1 |         20 |         96 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/screens/register_screen.dart                              | Dart       |        128 |          7 |         25 |        160 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/services/firestore_service.dart                           | Dart       |        243 |         74 |         59 |        376 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/lib/services/populate_catalog.dart                            | Dart       |        345 |          2 |         28 |        375 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/linux/CMakeLists.txt                                          | CMake      |        104 |          0 |         25 |        129 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/linux/flutter/CMakeLists.txt                                  | CMake      |         79 |          0 |         10 |         89 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/linux/flutter/generated_plugin_registrant.cc                  | C++        |          3 |          4 |          5 |         12 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/linux/flutter/generated_plugin_registrant.h                   | C++        |          5 |          5 |          6 |         16 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/linux/flutter/generated_plugins.cmake                         | CMake      |         18 |          0 |          6 |         24 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/linux/runner/CMakeLists.txt                                   | CMake      |         21 |          0 |          6 |         27 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/linux/runner/main.cc                                          | C++        |          5 |          0 |          2 |          7 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/linux/runner/my_application.cc                                | C++        |         94 |         26 |         29 |        149 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/linux/runner/my_application.h                                 | C++        |         10 |          7 |          5 |         22 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/macos/Flutter/GeneratedPluginRegistrant.swift                 | Swift      |         12 |          3 |          4 |         19 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/macos/Podfile                                                 | Ruby       |         32 |          1 |         10 |         43 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/macos/Runner/AppDelegate.swift                                | Swift      |         11 |          0 |          3 |         14 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json | JSON       |         68 |          0 |          1 |         69 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/macos/Runner/Base.lproj/MainMenu.xib                          | XML        |        343 |          0 |          1 |        344 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/macos/Runner/MainFlutterWindow.swift                          | Swift      |         12 |          0 |          4 |         16 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/macos/RunnerTests/RunnerTests.swift                           | Swift      |          7 |          2 |          4 |         13 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/pubspec.yaml                                                  | YAML       |         21 |          0 |          7 |         28 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/test/widget_test.dart                                         | Dart       |         14 |         10 |          7 |         31 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/web/index.html                                                | HTML       |         19 |         23 |          5 |         47 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/web/manifest.json                                             | JSON       |         35 |          0 |          1 |         36 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/CMakeLists.txt                                        | CMake      |         89 |          0 |         20 |        109 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/flutter/CMakeLists.txt                                | CMake      |         98 |          0 |         12 |        110 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/flutter/generated_plugin_registrant.cc                | C++        |         15 |          4 |          5 |         24 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/flutter/generated_plugin_registrant.h                 | C++        |          5 |          5 |          6 |         16 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/flutter/generated_plugins.cmake                       | CMake      |         22 |          0 |          6 |         28 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/runner/CMakeLists.txt                                 | CMake      |         34 |          0 |          7 |         41 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/runner/flutter_window.cpp                             | C++        |         49 |          7 |         16 |         72 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/runner/flutter_window.h                               | C++        |         20 |          5 |          9 |         34 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/runner/main.cpp                                       | C++        |         30 |          4 |         10 |         44 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/runner/resource.h                                     | C++        |          9 |          6 |          2 |         17 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/runner/utils.cpp                                      | C++        |         54 |          2 |         10 |         66 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/runner/utils.h                                        | C++        |          8 |          6 |          6 |         20 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/runner/win32_window.cpp                               | C++        |        210 |         24 |         55 |        289 |
+| /Users/jason/grocery-list-mobile-app/grocery_app/windows/runner/win32_window.h                                 | C++        |         48 |         31 |         24 |        103 |
+| Total                                                                                                          |            |      4,905 |        368 |        696 |      5,969 |
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

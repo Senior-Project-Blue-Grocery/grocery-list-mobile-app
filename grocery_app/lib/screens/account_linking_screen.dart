@@ -15,6 +15,85 @@ class _AccountLinkingScreenState extends State<AccountLinkingScreen> {
   final FirestoreService firestoreService = FirestoreService();
   final user = FirebaseAuth.instance.currentUser;
 
+  Future<void> _leaveList(String listId) async {
+    if (user == null) return;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Leave list?'),
+          content:
+              const Text('Are you sure you want to leave this shared list?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Leave'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      await firestoreService.leaveSharedList(listId, user!.uid);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('You left the list')),
+        );
+      }
+    }
+  }
+
+  Future<void> _confirmRemoveMember({
+    required String listId,
+    required String memberId,
+    required String memberName,
+  }) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Remove member?'),
+          content: Text('Remove $memberName from this list?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Remove'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      await firestoreService.removeUserFromList(listId, memberId);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Member removed')),
+        );
+      }
+    }
+  }
+
   Future<void> _showSendInviteDialog(
     BuildContext context,
     List<GroceryList> ownedLists,
@@ -124,13 +203,55 @@ class _AccountLinkingScreenState extends State<AccountLinkingScreen> {
     );
   }
 
+  Widget _buildMembersList(
+    List<Map<String, dynamic>> members,
+    String listId,
+    bool isOwner,
+  ) {
+    if (members.isEmpty) {
+      return const Text('No shared members yet');
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: members.map((member) {
+        final name = member['name'] ?? 'Unknown User';
+        final email = member['email'] ?? 'No email';
+        final memberId = member['uid'];
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text('• $name ($email)'),
+              ),
+              if (isOwner)
+                IconButton(
+                  icon: const Icon(
+                    Icons.remove_circle_outline,
+                    color: Colors.red,
+                  ),
+                  onPressed: () {
+                    _confirmRemoveMember(
+                      listId: listId,
+                      memberId: memberId,
+                      memberName: name,
+                    );
+                  },
+                ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (user == null) {
       return const Scaffold(
-        body: Center(
-          child: Text('No user signed in'),
-        ),
+        body: Center(child: Text('No user signed in')),
       );
     }
 
@@ -139,30 +260,21 @@ class _AccountLinkingScreenState extends State<AccountLinkingScreen> {
         title: const Text('Account Linking'),
       ),
       body: StreamBuilder<List<GroceryList>>(
-        stream: firestoreService.getOwnedLists(user!.uid),
-        builder: (context, ownedSnapshot) {
-          final ownedLists = ownedSnapshot.data ?? [];
+        stream: firestoreService.getUserLists(user!.uid),
+        builder: (context, listSnapshot) {
+          if (!listSnapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final lists = listSnapshot.data!;
+          final ownedLists =
+              lists.where((list) => list.ownerId == user!.uid).toList();
+          final sharedLists =
+              lists.where((list) => list.ownerId != user!.uid).toList();
 
           return StreamBuilder<QuerySnapshot>(
             stream: firestoreService.getPendingInvites(user!.uid),
             builder: (context, inviteSnapshot) {
-              if (inviteSnapshot.connectionState == ConnectionState.waiting ||
-                  ownedSnapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (inviteSnapshot.hasError) {
-                return Center(
-                  child: Text('Error: ${inviteSnapshot.error}'),
-                );
-              }
-
-              if (ownedSnapshot.hasError) {
-                return Center(
-                  child: Text('Error: ${ownedSnapshot.error}'),
-                );
-              }
-
               final inviteDocs = inviteSnapshot.data?.docs ?? [];
 
               return ListView(
@@ -182,87 +294,179 @@ class _AccountLinkingScreenState extends State<AccountLinkingScreen> {
                   const SizedBox(height: 24),
                   const Text(
                     'Pending Invites',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   if (inviteDocs.isEmpty)
-                    const Text(
-                      'No pending invites right now.',
-                      style: TextStyle(fontSize: 16),
-                    )
+                    const Text('No pending invites')
                   else
                     ...inviteDocs.map((doc) {
                       final data = doc.data() as Map<String, dynamic>;
-                      final listId = data['listId'] ?? '';
-                      final listName = data['listName'] ?? 'Unnamed List';
+                      final listId = data['listId'];
+                      final listName = data['listName'];
 
                       return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        child: ListTile(
+                          title: Text(listName),
+                          subtitle: const Text('You were invited'),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                listName,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              IconButton(
+                                icon: const Icon(Icons.check),
+                                onPressed: () async {
+                                  await firestoreService.acceptInvite(
+                                    inviteId: doc.id,
+                                    listId: listId,
+                                    userId: user!.uid,
+                                  );
+                                },
                               ),
-                              const SizedBox(height: 8),
-                              const Text('You were invited to join this list.'),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: () async {
-                                        await firestoreService.acceptInvite(
-                                          inviteId: doc.id,
-                                          listId: listId,
-                                          userId: user!.uid,
-                                        );
-
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text('Invite accepted'),
-                                            ),
-                                          );
-                                        }
-                                      },
-                                      child: const Text('Accept'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: OutlinedButton(
-                                      onPressed: () async {
-                                        await firestoreService
-                                            .declineInvite(doc.id);
-
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text('Invite declined'),
-                                            ),
-                                          );
-                                        }
-                                      },
-                                      child: const Text('Decline'),
-                                    ),
-                                  ),
-                                ],
+                              IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () async {
+                                  await firestoreService.declineInvite(doc.id);
+                                },
                               ),
                             ],
                           ),
                         ),
+                      );
+                    }),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Your Lists',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  if (ownedLists.isEmpty)
+                    const Text('You do not own any lists')
+                  else
+                    ...ownedLists.map((list) {
+                      return FutureBuilder<Map<String, dynamic>?>(
+                        future: firestoreService.getUserById(list.ownerId),
+                        builder: (context, ownerSnapshot) {
+                          final ownerName =
+                              ownerSnapshot.data?['name'] ?? 'Unknown Owner';
+
+                          return FutureBuilder<List<Map<String, dynamic>>>(
+                            future:
+                                firestoreService.getUsersByIds(list.sharedWith),
+                            builder: (context, membersSnapshot) {
+                              final members = membersSnapshot.data ?? [];
+
+                              return Card(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        list.name,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text('Owner: $ownerName'),
+                                      const SizedBox(height: 10),
+                                      const Text(
+                                        'Members',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      _buildMembersList(
+                                        members,
+                                        list.id,
+                                        true,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    }),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Shared Lists',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  if (sharedLists.isEmpty)
+                    const Text('You are not part of any shared lists')
+                  else
+                    ...sharedLists.map((list) {
+                      return FutureBuilder<Map<String, dynamic>?>(
+                        future: firestoreService.getUserById(list.ownerId),
+                        builder: (context, ownerSnapshot) {
+                          final ownerName =
+                              ownerSnapshot.data?['name'] ?? 'Unknown Owner';
+
+                          return FutureBuilder<List<Map<String, dynamic>>>(
+                            future:
+                                firestoreService.getUsersByIds(list.sharedWith),
+                            builder: (context, membersSnapshot) {
+                              final members = membersSnapshot.data ?? [];
+
+                              return Card(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              list.name,
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(
+                                              Icons.exit_to_app,
+                                              color: Colors.red,
+                                            ),
+                                            onPressed: () =>
+                                                _leaveList(list.id),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text('Owner: $ownerName'),
+                                      const SizedBox(height: 10),
+                                      const Text(
+                                        'Members',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      _buildMembersList(
+                                        members,
+                                        list.id,
+                                        false,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
                       );
                     }),
                 ],

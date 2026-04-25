@@ -12,7 +12,6 @@ class FirestoreService {
   // GROCERY LISTS FUNCTIONS
   //
 
-  // create new list
   Future<void> createList(GroceryList list) async {
     final docRef = databaseConnection.collection('groceryLists').doc();
 
@@ -27,7 +26,6 @@ class FirestoreService {
     await docRef.set(newList.toMap());
   }
 
-  // show lists user owns
   Stream<List<GroceryList>> getOwnedLists(String userId) {
     return databaseConnection
         .collection('groceryLists')
@@ -37,7 +35,6 @@ class FirestoreService {
             snapshot.docs.map((doc) => GroceryList.fromFirestore(doc)).toList());
   }
 
-  // show lists shared with user
   Stream<List<GroceryList>> getSharedLists(String userId) {
     return databaseConnection
         .collection('groceryLists')
@@ -47,7 +44,6 @@ class FirestoreService {
             snapshot.docs.map((doc) => GroceryList.fromFirestore(doc)).toList());
   }
 
-  // show all lists user has access to
   Stream<List<GroceryList>> getUserLists(String userId) {
     return Rx.combineLatest2<List<GroceryList>, List<GroceryList>,
         List<GroceryList>>(
@@ -75,16 +71,26 @@ class FirestoreService {
     );
   }
 
-  // delete list
   Future<void> deleteList(String listId) async {
     await databaseConnection.collection('groceryLists').doc(listId).delete();
+  }
+
+  Future<void> leaveSharedList(String listId, String userId) async {
+    await databaseConnection.collection('groceryLists').doc(listId).update({
+      'sharedWith': FieldValue.arrayRemove([userId]),
+    });
+  }
+
+  Future<void> removeUserFromList(String listId, String userId) async {
+    await databaseConnection.collection('groceryLists').doc(listId).update({
+      'sharedWith': FieldValue.arrayRemove([userId]),
+    });
   }
 
   //
   // LIST INVITE FUNCTIONS
   //
 
-  // send invite
   Future<void> sendInvite({
     required String listId,
     required String listName,
@@ -101,7 +107,6 @@ class FirestoreService {
     });
   }
 
-  // get pending invites for a user
   Stream<QuerySnapshot> getPendingInvites(String userId) {
     return databaseConnection
         .collection('listInvites')
@@ -110,7 +115,6 @@ class FirestoreService {
         .snapshots();
   }
 
-  // accept invite
   Future<void> acceptInvite({
     required String inviteId,
     required String listId,
@@ -119,7 +123,8 @@ class FirestoreService {
     final batch = databaseConnection.batch();
 
     final listRef = databaseConnection.collection('groceryLists').doc(listId);
-    final inviteRef = databaseConnection.collection('listInvites').doc(inviteId);
+    final inviteRef =
+        databaseConnection.collection('listInvites').doc(inviteId);
 
     batch.update(listRef, {
       'sharedWith': FieldValue.arrayUnion([userId]),
@@ -133,7 +138,6 @@ class FirestoreService {
     await batch.commit();
   }
 
-  // decline invite
   Future<void> declineInvite(String inviteId) async {
     await databaseConnection.collection('listInvites').doc(inviteId).update({
       'status': 'declined',
@@ -141,7 +145,6 @@ class FirestoreService {
     });
   }
 
-  // get UID from email
   Future<String?> getUserIdByEmail(String email) async {
     final snapshot = await databaseConnection
         .collection('users')
@@ -154,41 +157,34 @@ class FirestoreService {
     return snapshot.docs.first.id;
   }
 
-  /*
-  //
-  // SHARING FUNCTIONS
-  //
+  Future<Map<String, dynamic>?> getUserById(String userId) async {
+    final doc = await databaseConnection.collection('users').doc(userId).get();
 
-  Future<void> shareList(String listId, String userId) async {
-    await databaseConnection.collection('groceryLists').doc(listId).update({
-      'sharedWith': FieldValue.arrayUnion([userId])
-    });
+    if (!doc.exists) return null;
+    return doc.data();
   }
 
-  Future<void> unshareList(String listId, String userId) async {
-    await databaseConnection.collection('groceryLists').doc(listId).update({
-      'sharedWith': FieldValue.arrayRemove([userId])
-    });
+  Future<List<Map<String, dynamic>>> getUsersByIds(List<String> userIds) async {
+    List<Map<String, dynamic>> users = [];
+
+    for (final uid in userIds) {
+      final doc = await databaseConnection.collection('users').doc(uid).get();
+
+      if (doc.exists && doc.data() != null) {
+        users.add({
+          'uid': uid,
+          ...doc.data()!,
+        });
+      }
+    }
+
+    return users;
   }
-
-  Future<bool> userHasAccess(String listId, String userId) async {
-    final doc = await databaseConnection.collection('groceryLists').doc(listId).get();
-
-    if (!doc.exists) return false;
-
-    final data = doc.data() as Map<String, dynamic>;
-    final ownerId = data['ownerId'];
-    final shared = List<String>.from(data['sharedWith'] ?? []);
-
-    return ownerId == userId || shared.contains(userId);
-  }
-  */
 
   //
   // ITEMS IN A LIST FUNCTIONS
   //
 
-  // add an item to a list
   Future<void> addItem(String userId, String listId, GroceryItem item) async {
     await databaseConnection
         .collection('groceryLists')
@@ -199,7 +195,6 @@ class FirestoreService {
     await incrementItemCount(listId, 1);
   }
 
-  // listen to items in list, updates automatically
   Stream<List<GroceryItem>> getItems(String listId) {
     return databaseConnection
         .collection('groceryLists')
@@ -210,7 +205,6 @@ class FirestoreService {
             snapshot.docs.map((doc) => GroceryItem.fromFirestore(doc)).toList());
   }
 
-  // mark item completed or not
   Future<void> toggleItem(String listId, String itemId, bool value) async {
     await databaseConnection
         .collection('groceryLists')
@@ -220,7 +214,6 @@ class FirestoreService {
         .update({'completed': value});
   }
 
-  // delete item from list
   Future<void> deleteItem(String listId, String itemId) async {
     await databaseConnection
         .collection('groceryLists')
@@ -232,7 +225,6 @@ class FirestoreService {
     await incrementItemCount(listId, -1);
   }
 
-  // update item count
   Future<void> incrementItemCount(String listId, int delta) async {
     await databaseConnection.collection('groceryLists').doc(listId).update({
       'itemCount': FieldValue.increment(delta),
@@ -265,27 +257,10 @@ class FirestoreService {
 
   Stream<List<CatalogItem>> getCatalogItems() {
     return databaseConnection.collection('catalog').snapshots().map(
-          (snapshot) => snapshot.docs
-              .map((doc) => CatalogItem.fromSnapshot(doc))
-              .toList(),
+          (snapshot) =>
+              snapshot.docs.map((doc) => CatalogItem.fromSnapshot(doc)).toList(),
         );
   }
-
-  /*
-  Future<List<CatalogItem>> searchCatalog(String query) async {
-    final searchQuery = query.toLowerCase();
-
-    final snapshot = await databaseConnection
-        .collection('itemsCatalog')
-        .where('searchKeywords', arrayContains: searchQuery)
-        .limit(10)
-        .get();
-
-    return snapshot.docs
-        .map((doc) => CatalogItem.fromFirestore(doc))
-        .toList();
-  }
-  */
 
   //
   // CART FUNCTIONS
@@ -365,12 +340,53 @@ class FirestoreService {
         'name': cartItem.name,
         'quantity': cartItem.quantity,
         'completed': false,
+        'imageUrl': cartItem.imageUrl,
+        'price': cartItem.price,
       });
 
       totalItems += cartItem.quantity;
     }
 
     await incrementItemCount(listId, totalItems);
+    await clearCart(userId);
+  }
+
+  Future<void> addCartToMultipleLists(
+    String userId,
+    List<String> listIds,
+  ) async {
+    final cartSnapshot = await databaseConnection
+        .collection('users')
+        .doc(userId)
+        .collection('cart')
+        .get();
+
+    if (cartSnapshot.docs.isEmpty || listIds.isEmpty) return;
+
+    for (final listId in listIds) {
+      int totalItems = 0;
+
+      for (final doc in cartSnapshot.docs) {
+        final cartItem = CartItem.fromFirestore(doc);
+
+        await databaseConnection
+            .collection('groceryLists')
+            .doc(listId)
+            .collection('items')
+            .add({
+          'name': cartItem.name,
+          'quantity': cartItem.quantity,
+          'completed': false,
+          'imageUrl': cartItem.imageUrl,
+          'price': cartItem.price,
+        });
+
+        totalItems += cartItem.quantity;
+      }
+
+      await incrementItemCount(listId, totalItems);
+    }
+
     await clearCart(userId);
   }
 }
